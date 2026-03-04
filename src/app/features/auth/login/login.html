@@ -1,0 +1,135 @@
+<div class="auth-container">
+  @if (view() === 'success') {
+    <div class="success-screen">
+      <div class="success-icon">✓</div>
+      <h2>Welcome back!</h2>
+      <p>Taking you to your trade journal now.</p>
+      <button class="link-btn" (click)="backToLogin()">← Back to sign in</button>
+    </div>
+  } @else {
+    <div class="auth-card">
+      <!-- Logo -->
+      <div class="logo-section fade-up">
+        <div class="logo">
+          <span>📒</span>
+        </div>
+        <h1>TradeJournal</h1>
+        <p>
+          @if (view() === 'login') {
+            Sign in to view your trades
+          } @else {
+            Create an account to get started
+          }
+        </p>
+      </div>
+
+      <!-- Card -->
+      <div class="form-card fade-up-1">
+        <!-- Tab switcher -->
+        <div class="tab-switcher">
+          <button class="tab-btn" [class.active]="view() === 'login'" [class.inactive]="view() !== 'login'" (click)="switchTo('login')">
+            Sign In
+          </button>
+          <button class="tab-btn" [class.active]="view() === 'register'" [class.inactive]="view() !== 'register'" (click)="switchTo('register')">
+            Create Account
+          </button>
+        </div>
+
+        <!-- API error -->
+        @if (apiError()) {
+          <div class="api-error">
+            ⚠ {{ apiError() }}
+          </div>
+        }
+
+        <!-- Form -->
+        <form [formGroup]="currentForm" (ngSubmit)="submit()" class="form-fields">
+          <!-- Username -->
+          <div class="field-group fade-up-2">
+            <label for="username">Username</label>
+            <input id="username" type="text" formControlName="username" class="field-input" [class.error]="isFieldInvalid('username')" placeholder="e.g. trader_yash" autofocus>
+            @if (getErrorMessage('username')) {
+              <p class="error-msg">! {{ getErrorMessage('username') }}</p>
+            }
+          </div>
+
+          <!-- Email (register only) -->
+          @if (view() === 'register') {
+            <div class="field-group fade-up-2">
+              <label for="email-address">Email Address</label>
+              <input id="email-address" type="email" formControlName="email" class="field-input" [class.error]="isFieldInvalid('email')" placeholder="you@example.com">
+              @if (getErrorMessage('email')) {
+                <p class="error-msg">! {{ getErrorMessage('email') }}</p>
+              }
+            </div>
+          }
+
+          <!-- Password -->
+          <div class="field-group fade-up-3">
+            <label for="password">Password</label>
+            <div class="password-input">
+              <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" class="field-input" [class.error]="isFieldInvalid('password')" [placeholder]="view() === 'register' ? 'At least 8 characters' : 'Your password'">
+              <button type="button" class="password-toggle" (click)="showPassword = !showPassword">
+                {{ showPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+            @if (getErrorMessage('password')) {
+              <p class="error-msg">! {{ getErrorMessage('password') }}</p>
+            }
+          </div>
+
+          <!-- Confirm Password (register only) -->
+          @if (view() === 'register') {
+            <div class="field-group fade-up-3">
+              <label for="confirm-password">Confirm Password</label>
+              <div class="password-input">
+                <input id="confirm-password" [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirm" class="field-input" [class.error]="isFieldInvalid('confirm')" placeholder="Repeat your password">
+                <button type="button" class="password-toggle" (click)="showConfirmPassword = !showConfirmPassword">
+                  {{ showConfirmPassword ? '🙈' : '👁️' }}
+                </button>
+              </div>
+              @if (getErrorMessage('confirm')) {
+                <p class="error-msg">! {{ getErrorMessage('confirm') }}</p>
+              }
+            </div>
+          }
+
+          <!-- Forgot password (login only) -->
+          @if (view() === 'login') {
+            <div class="forgot-password">
+              <button type="button" class="link-btn">Forgot password?</button>
+            </div>
+          }
+
+          <!-- Submit button -->
+          <div class="submit-section fade-up-4">
+            <button type="submit" class="btn-primary" [disabled]="loading()">
+              @if (loading()) {
+                <span class="spinner"></span>
+                {{ view() === 'login' ? 'Signing in…' : 'Creating account…' }}
+              } @else {
+                {{ view() === 'login' ? 'Sign In' : 'Create Account' }}
+              }
+            </button>
+          </div>
+        </form>
+
+        <!-- Switch link -->
+        <p class="switch-link">
+          @if (view() === 'login') {
+            New to TradeJournal?
+            <button class="link-btn" (click)="switchTo('register')">Create an account</button>
+          } @else {
+            Already have an account?
+            <button class="link-btn" (click)="switchTo('login')">Sign in</button>
+          }
+        </p>
+      </div>
+
+      <!-- Footer note -->
+      <p class="footer-note">
+        Connects to Spring Boot · localhost:8085
+      </p>
+    </div>
+  }
+</div>

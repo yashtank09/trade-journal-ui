@@ -1,0 +1,338 @@
+<div [ngStyle]="{ 'min-height': '100vh', 'background': C.bg, 'font-family': 'DM Sans, sans-serif' }"
+     class="trade-logs-container">
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="wordmark">
+                    <div class="logo">📒</div>
+                    <span class="app-name">TradeJournal</span>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn">◈ Dashboard</button>
+                    <button class="nav-btn active">≡ Trade Log</button>
+                    <button class="nav-btn">∿ Analytics</button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <span class="username">trader_yash</span>
+                <div class="avatar">Y</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Title -->
+        <div class="page-header">
+            <div>
+                <h1>Trade Log</h1>
+                <p>{{ filtered().length }} of {{ trades().length }} trades · sorted by date</p>
+            </div>
+            <button (click)="addTrade()" class="btn-green">
+                <span class="plus">+</span> Log a Trade
+            </button>
+        </div>
+
+        <!-- Summary Bar -->
+        <div class="summary-bar">
+            @for (stat of summaryStats(); track stat.label) {
+                <div class="stat-item">
+                    <p class="stat-label">{{ stat.label }}</p>
+                    <p [ngStyle]="{ 'color': stat.color || C.ink, 'font-family': stat.mono ? 'DM Mono, monospace' : 'DM Sans, sans-serif' }"
+                       class="stat-value">
+                        {{ stat.value }}
+                    </p>
+                </div>
+            }
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input
+                        (ngModelChange)="onSearchChange($event)"
+                        [(ngModel)]="search"
+                        class="field-input"
+                        placeholder="Search instrument…"
+                        type="text"
+                >
+            </div>
+
+            <div class="filter-pills">
+                <span class="filter-label">Direction:</span>
+                <button
+                        (click)="onFiltersChange({...filters(), type: 'ALL'})"
+                        [class]="filters().type === 'ALL' ? 'active-default' : 'inactive'"
+                        class="pill"
+                >All
+                </button>
+                <button
+                        (click)="onFiltersChange({...filters(), type: 'LONG'})"
+                        [class]="filters().type === 'LONG' ? 'active-green' : 'inactive'"
+                        class="pill"
+                >▲ Long
+                </button>
+                <button
+                        (click)="onFiltersChange({...filters(), type: 'SHORT'})"
+                        [class]="filters().type === 'SHORT' ? 'active-amber' : 'inactive'"
+                        class="pill"
+                >▼ Short
+                </button>
+
+                <div class="divider"></div>
+
+                <span class="filter-label">Status:</span>
+                <button
+                        (click)="onFiltersChange({...filters(), status: 'ALL'})"
+                        [class]="filters().status === 'ALL' ? 'active-default' : 'inactive'"
+                        class="pill"
+                >All
+                </button>
+                <button
+                        (click)="onFiltersChange({...filters(), status: 'OPEN'})"
+                        [class]="filters().status === 'OPEN' ? 'active-amber' : 'inactive'"
+                        class="pill"
+                >Open
+                </button>
+                <button
+                        (click)="onFiltersChange({...filters(), status: 'CLOSED'})"
+                        [class]="filters().status === 'CLOSED' ? 'active-green' : 'inactive'"
+                        class="pill"
+                >Closed
+                </button>
+
+                <div class="divider"></div>
+
+                <span class="filter-label">Date:</span>
+                <button
+                        (click)="onFiltersChange({...filters(), date: 'ALL'})"
+                        [class]="filters().date === 'ALL' ? 'active-default' : 'inactive'"
+                        class="pill"
+                >All time
+                </button>
+                <button
+                        (click)="onFiltersChange({...filters(), date: 'TODAY'})"
+                        [class]="filters().date === 'TODAY' ? 'active-default' : 'inactive'"
+                        class="pill"
+                >Today
+                </button>
+                <button
+                        (click)="onFiltersChange({...filters(), date: 'WEEK'})"
+                        [class]="filters().date === 'WEEK' ? 'active-default' : 'inactive'"
+                        class="pill"
+                >This week
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+            <!-- Column Headers -->
+            <div class="table-header">
+                <span>Instrument</span>
+                <span>Type</span>
+                <span>Entry</span>
+                <span>Exit</span>
+                <span>Qty</span>
+                <span>Net P&L</span>
+                <span>Status</span>
+            </div>
+
+            <!-- Rows -->
+            @if (pageRows().length > 0) {
+                @for (trade of pageRows(); track trade.id; let i = $index) {
+                    <div>
+                        <div
+                                (click)="selectTrade(trade)"
+                                [class.selected]="selected()?.id === trade.id"
+                                class="trade-row"
+                        >
+                            <!-- Instrument -->
+                            <div class="instrument-cell">
+                                <p class="instrument-name">{{ trade.instrument }}</p>
+                                <p class="instrument-date">{{ trade.date }} · {{ trade.time }}</p>
+                            </div>
+
+                            <!-- Type Badge -->
+                            <span [class.long]="trade.type === 'LONG'" [class.short]="trade.type === 'SHORT'"
+                                  class="type-badge">
+                {{ trade.type === 'LONG' ? '▲ LONG' : '▼ SHORT' }}
+              </span>
+
+                            <!-- Entry Price -->
+                            <span class="price-cell">₹{{ trade.entry.toLocaleString('en-IN') }}</span>
+
+                            <!-- Exit Price -->
+                            <span class="price-cell">
+                @if (trade.exit) {
+                    ₹{{ trade.exit.toLocaleString('en-IN') }}
+                } @else {
+                    <span class="placeholder">—</span>
+                }
+              </span>
+
+                            <!-- Quantity -->
+                            <span class="qty-cell">{{ trade.qty }}</span>
+
+                            <!-- Net P&L -->
+                            <span [style]="pnlStyle(trade.netPnl)" class="pnl-cell">
+                @if (trade.netPnl !== null) {
+                    {{ fmtPnl(trade.netPnl) }}
+                } @else {
+                    <span class="status-badge open">OPEN</span>
+                }
+              </span>
+
+                            <!-- Status -->
+                            <span [class.closed]="trade.status === 'CLOSED'" [class.open]="trade.status === 'OPEN'"
+                                  class="status-badge">
+                {{ trade.status }}
+              </span>
+                        </div>
+                        @if (i < pageRows().length - 1) {
+                            <div class="divider-row"></div>
+                        }
+                    </div>
+                }
+            } @else {
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p class="empty-title">No trades match your filters</p>
+                    <button (click)="clearFilters()" class="btn-ghost">Clear all filters</button>
+                </div>
+            }
+
+            <!-- Pagination -->
+            @if (pages() > 1) {
+                <div class="pagination">
+                    <p class="pagination-info">Page {{ page() + 1 }} of {{ pages() }}</p>
+                    <div class="pagination-controls">
+                        <button
+                                (click)="changePage(page() - 1)"
+                                [disabled]="page() === 0"
+                                class="btn-ghost"
+                        >← Prev
+                        </button>
+                        @for (p of createArray(pages()); track p; let i = $index) {
+                            <button
+                                    (click)="changePage(i)"
+                                    [class.active]="page() === i"
+                                    class="page-btn"
+                            >{{ i + 1 }}
+                            </button>
+                        }
+                        <button
+                                (click)="changePage(page() + 1)"
+                                [disabled]="page() >= pages() - 1"
+                                class="btn-ghost"
+                        >Next →
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Helpful tip -->
+        <p class="help-tip">💡 Click any row to view full trade details</p>
+    </main>
+
+    <!-- Detail Panel -->
+    @if (selected()) {
+        <div (click)="closeDetails()" class="detail-panel-overlay"></div>
+        <div class="detail-panel">
+            <!-- Header -->
+            <div class="panel-header">
+                <div>
+                    <h2>{{ selected()!.instrument }}</h2>
+                    <div class="panel-badges">
+            <span [class.long]="selected()!.type === 'LONG'" [class.short]="selected()!.type === 'SHORT'"
+                  class="type-badge">
+              {{ selected()!.type === 'LONG' ? '▲ LONG' : '▼ SHORT' }}
+            </span>
+                        <span [class.closed]="selected()!.status === 'CLOSED'"
+                              [class.open]="selected()!.status === 'OPEN'"
+                              class="status-badge">
+              {{ selected()!.status }}
+            </span>
+                    </div>
+                </div>
+                <div class="panel-actions">
+                    <button (click)="editTrade(selected()!)" class="btn-ghost">Edit</button>
+                    <button (click)="closeDetails()" class="btn-ghost">✕</button>
+                </div>
+            </div>
+
+            <!-- P&L Hero -->
+            <div [class.loss]="selected()!.netPnl! < 0" [class.open]="selected()!.status === 'OPEN'"
+                 [class.profit]="selected()!.netPnl! > 0"
+                 class="pnl-hero">
+                <p class="pnl-label">{{ selected()!.status === 'OPEN' ? 'Position Status' : 'Net P&L' }}</p>
+                <p class="pnl-amount">
+                    {{ selected()!.status === 'OPEN' ? 'OPEN' : fmtPnl(selected()!.netPnl) }}
+                </p>
+                @if (selected()!.status !== 'OPEN') {
+                    <p class="pnl-details">Entry ₹{{ selected()!.entry.toLocaleString('en-IN') }} → Exit
+                        ₹{{ selected()!.exit?.toLocaleString('en-IN') }}</p>
+                }
+            </div>
+
+            <!-- Key Facts Grid -->
+            <div class="facts-grid">
+                @for (item of [
+                    ['Date', selected()!.date],
+                    ['Time', selected()!.time || '—'],
+                    ['Qty', selected()!.qty],
+                    ['Emotion', selected()!.emotion || '—']
+                ]; track item[0]) {
+                    <div class="fact-item">
+                        <p class="fact-label">{{ item[0] }}</p>
+                        <p class="fact-value">{{ item[1] }}</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Trade Plan -->
+            @if (selected()!.plan) {
+                <div class="plan-section">
+                    <p class="section-title">Trade Plan</p>
+                    <div class="plan-content">
+                        <p>{{ selected()!.plan }}</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Notes -->
+            @if (selected()!.notes) {
+                <div class="notes-section">
+                    <p class="section-title">Notes</p>
+                    <p class="notes-content">"{{ selected()!.notes }}"</p>
+                </div>
+            }
+
+            <!-- Tags -->
+            @if (selected()!.tags && selected()!.tags.length > 0) {
+                <div class="tags-section">
+                    @for (tag of selected()!.tags; track tag) {
+                        <span class="tag">#{{ tag }}</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Add/Edit Modal -->
+    @if (showForm()) {
+        <div (click)="closeForm()" class="modal-overlay">
+            <div (click)="$event.stopPropagation()" class="modal-card">
+                <h2>{{ editing() ? 'Edit Trade' : 'Log a Trade' }}</h2>
+                <p>Trade form functionality coming soon...</p>
+                <div class="form-actions">
+                    <button (click)="closeForm()" class="btn-ghost">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
