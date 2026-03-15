@@ -1,117 +1,102 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {Observable, throwError} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {environment} from '../../../environments/environment';
 
-export interface ApiResponse<T> {
-    data?: T;
-    error?: string;
-    message?: string;
-    status: number;
-}
-
-export interface RequestOptions {
+// Use Angular's built-in types for HTTP options
+type RequestOptions = {
     headers?: HttpHeaders | { [header: string]: string | string[] };
     params?: HttpParams | { [param: string]: string | number | boolean | readonly (string | number | boolean)[] };
     reportProgress?: boolean;
     withCredentials?: boolean;
-}
+};
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
-    private baseUrl: string = 'http://localhost:3000/api';
+    private readonly baseUrl: string = environment.apiUrl;
 
     constructor(private readonly http: HttpClient) {
-        // Default base URL
     }
 
-    setBaseUrl(url: string): void {
-        this.baseUrl = url;
+    private buildUrl(endpoint: string): string {
+        // Ensures that we don't have double slashes if endpoint starts with /
+        return `${this.baseUrl}/${endpoint.replace(/^\//, '')}`;
     }
 
-    get<T>(endpoint: string, options?: RequestOptions): Observable<ApiResponse<T>> {
-        const url = `${this.baseUrl}${endpoint}`;
-        return this.http.get<T>(url, options).pipe(
-            map((data) => ({data, status: 200})),
-            catchError(this.handleError)
-        );
+    // --- Core HTTP Methods ---
+
+    get<T>(endpoint: string, options?: RequestOptions): Observable<T> {
+        return this.http.get<T>(this.buildUrl(endpoint), options);
     }
 
-    post<T>(endpoint: string, body: any, options?: RequestOptions): Observable<ApiResponse<T>> {
-        const url = `${this.baseUrl}${endpoint}`;
-        return this.http.post<T>(url, body, options).pipe(
-            map((data) => ({data, status: 201})),
-            catchError(this.handleError)
-        );
+    post<T>(endpoint: string, body: any, options?: RequestOptions): Observable<T> {
+        return this.http.post<T>(this.buildUrl(endpoint), body, options);
     }
 
-    put<T>(endpoint: string, body: any, options?: RequestOptions): Observable<ApiResponse<T>> {
-        const url = `${this.baseUrl}${endpoint}`;
-        return this.http.put<T>(url, body, options).pipe(
-            map((data) => ({data, status: 200})),
-            catchError(this.handleError)
-        );
+    put<T>(endpoint: string, body: any, options?: RequestOptions): Observable<T> {
+        return this.http.put<T>(this.buildUrl(endpoint), body, options);
     }
 
-    patch<T>(endpoint: string, body: any, options?: RequestOptions): Observable<ApiResponse<T>> {
-        const url = `${this.baseUrl}${endpoint}`;
-        return this.http.patch<T>(url, body, options).pipe(
-            map((data) => ({data, status: 200})),
-            catchError(this.handleError)
-        );
+    patch<T>(endpoint: string, body: any, options?: RequestOptions): Observable<T> {
+        return this.http.patch<T>(this.buildUrl(endpoint), body, options);
     }
 
-    delete<T>(endpoint: string, options?: RequestOptions): Observable<ApiResponse<T>> {
-        const url = `${this.baseUrl}${endpoint}`;
-        return this.http.delete<T>(url, options).pipe(
-            map(() => ({status: 204})),
-            catchError(this.handleError)
-        );
+    delete<T>(endpoint: string, options?: RequestOptions): Observable<T> {
+        return this.http.delete<T>(this.buildUrl(endpoint), options);
     }
 
-    // Convenience methods for common operations
-    getOne<T>(endpoint: string, id: string | number, options?: RequestOptions): Observable<ApiResponse<T>> {
+    // --- Convenience Methods for Common CRUD Operations ---
+
+    getOne<T>(endpoint: string, id: string | number, options?: RequestOptions): Observable<T> {
         return this.get<T>(`${endpoint}/${id}`, options);
     }
 
-    create<T>(endpoint: string, item: any, options?: RequestOptions): Observable<ApiResponse<T>> {
+    create<T>(endpoint: string, item: any, options?: RequestOptions): Observable<T> {
         return this.post<T>(endpoint, item, options);
     }
 
-    update<T>(endpoint: string, id: string | number, item: any, options?: RequestOptions): Observable<ApiResponse<T>> {
+    update<T>(endpoint: string, id: string | number, item: any, options?: RequestOptions): Observable<T> {
         return this.put<T>(`${endpoint}/${id}`, item, options);
     }
 
-    remove<T>(endpoint: string, id: string | number, options?: RequestOptions): Observable<ApiResponse<T>> {
+    remove<T>(endpoint: string, id: string | number, options?: RequestOptions): Observable<T> {
         return this.delete<T>(`${endpoint}/${id}`, options);
     }
 
-    // File upload
-    upload<T>(endpoint: string, file: File, additionalData?: any, options?: RequestOptions): Observable<ApiResponse<T>> {
+    // --- Specialized Methods ---
+
+    /**
+     * Handles file uploads using FormData.
+     */
+    upload<T>(endpoint: string, file: File, additionalData?: Record<string, any>, options?: RequestOptions): Observable<T> {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', file, file.name);
 
         if (additionalData) {
             Object.keys(additionalData).forEach(key => {
+                // FormData values are converted to string
                 formData.append(key, additionalData[key]);
             });
         }
 
+        // The browser will automatically set the 'Content-Type' header with the correct boundary.
+        // We only need to ensure our default JSON content-type is not sent.
         const uploadOptions: RequestOptions = {
             ...options,
-            headers: {
-                'Accept': 'application/json'
-                // Don't set Content-Type header for FormData - browser will set it with boundary
-            }
+            headers: {...options?.headers, 'Accept': 'application/json'}
         };
 
         return this.post<T>(endpoint, formData, uploadOptions);
     }
 
-    // Build query parameters from object
-    buildParams(params: { [key: string]: any }): HttpParams {
+    // --- Helper Utilities ---
+
+    /**
+     * Builds HttpParams from a plain object, filtering out null/undefined values.
+     */
+    buildParams(params: Record<string, any>): HttpParams {
         let httpParams = new HttpParams();
         Object.keys(params).forEach(key => {
             const value = params[key];
@@ -122,8 +107,10 @@ export class ApiService {
         return httpParams;
     }
 
-    // Build headers with common defaults
-    buildHeaders(customHeaders?: { [key: string]: string }): HttpHeaders {
+    /**
+     * Builds HttpHeaders with common defaults.
+     */
+    buildHeaders(customHeaders?: Record<string, string>): HttpHeaders {
         let headers = new HttpHeaders({
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -136,19 +123,5 @@ export class ApiService {
         }
 
         return headers;
-    }
-
-    private handleError(error: any): Observable<never> {
-        let errorMessage = 'An unknown error occurred';
-
-        if (error.error instanceof ErrorEvent) {
-            // Client-side error
-            errorMessage = `Error: ${error.error.message}`;
-        } else {
-            // Server-side error
-            errorMessage = error.error?.message || error.message || `Error Code: ${error.status}`;
-        }
-
-        return throwError(() => errorMessage);
     }
 }

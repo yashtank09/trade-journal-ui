@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { JournalRoutingModule } from './journal-routing-module';
-import { TradeLogsComponent } from './components/trade-logs/trade-logs';
+import { TradeSummaryComponent } from './components/trade-summary/trade-summary';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
     JournalRoutingModule,
-    TradeLogsComponent
+    TradeSummaryComponent
   ]
 })
 export class JournalModule { }

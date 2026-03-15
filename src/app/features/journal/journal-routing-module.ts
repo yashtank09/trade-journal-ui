@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TradeLogsComponent } from './components/trade-logs/trade-logs';
+import { TradeSummaryComponent } from './components/trade-summary/trade-summary';
 
 const routes: Routes = [
   {
     path: '',
-    component: TradeLogsComponent
+    component: TradeSummaryComponent
   }
 ];
 

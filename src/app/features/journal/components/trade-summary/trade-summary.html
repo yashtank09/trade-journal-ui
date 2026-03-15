@@ -1,130 +1,163 @@
 <div [ngStyle]="{ 'min-height': '100vh', 'background': C.bg, 'font-family': 'DM Sans, sans-serif' }"
-     class="trade-logs-container">
+     class="trade-summary-container">
 
     <!-- Header -->
-    <header class="app-header">
-        <div class="header-content">
-            <div class="header-left">
-                <div class="wordmark">
-                    <div class="logo">📒</div>
-                    <span class="app-name">TradeJournal</span>
-                </div>
-                <nav class="nav">
-                    <button class="nav-btn">◈ Dashboard</button>
-                    <button class="nav-btn active">≡ Trade Log</button>
-                    <button class="nav-btn">∿ Analytics</button>
-                </nav>
-            </div>
-            <div class="header-right">
-                <span class="username">trader_yash</span>
-                <div class="avatar">Y</div>
-            </div>
-        </div>
-    </header>
+    <app-header></app-header>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- Page Title -->
         <div class="page-header">
-            <div>
-                <h1>Trade Log</h1>
-                <p>{{ filtered().length }} of {{ trades().length }} trades · sorted by date</p>
+            <div class="header-content">
+                <div class="title-section">
+                    <div class="title-wrapper">
+                        <h1 class="page-title">
+                            <span class="title-icon">📊</span>
+                            Trade Summary
+                        </h1>
+                        <div class="title-badge">
+                            <span class="badge-dot"></span>
+                            {{ filtered().length }} of {{ trades().length }} trades
+                        </div>
+                    </div>
+                    <p class="page-subtitle">Sorted by date · {{ getCurrentDateString() }}</p>
+                </div>
+                <button (click)="addTrade()" class="btn-primary">
+                    <span class="btn-icon">+</span>
+                    <span class="btn-text">Log Trade</span>
+                </button>
             </div>
-            <button (click)="addTrade()" class="btn-green">
-                <span class="plus">+</span> Log a Trade
-            </button>
         </div>
 
-        <!-- Summary Bar -->
-        <div class="summary-bar">
+        <!-- Summary Cards -->
+        <div class="summary-cards">
             @for (stat of summaryStats(); track stat.label) {
-                <div class="stat-item">
-                    <p class="stat-label">{{ stat.label }}</p>
-                    <p [ngStyle]="{ 'color': stat.color || C.ink, 'font-family': stat.mono ? 'DM Mono, monospace' : 'DM Sans, sans-serif' }"
-                       class="stat-value">
-                        {{ stat.value }}
-                    </p>
+                <div [attr.data-stat]="stat.label" class="summary-card">
+                    <div class="card-header">
+                        <span class="card-icon">{{ getStatIcon(stat.label) }}</span>
+                        <span class="card-label">{{ stat.label }}</span>
+                    </div>
+                    <div class="card-content">
+                        <p [ngStyle]="{ 'color': stat.color || C.ink }"
+                           class="card-value">
+                            {{ stat.value }}
+                        </p>
+                        @if (getStatChange(stat.label)) {
+                            <span class="card-change positive">+12.5%</span>
+                        }
+                    </div>
                 </div>
             }
         </div>
 
-        <!-- Filters -->
-        <div class="filters-section">
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input
-                        (ngModelChange)="onSearchChange($event)"
-                        [(ngModel)]="search"
-                        class="field-input"
-                        placeholder="Search instrument…"
-                        type="text"
-                >
+        <!-- Filters Section -->
+        <div class="filters-container compact">
+            <div class="filters-header">
+                <h3 class="filters-title">Filters & Search</h3>
+                <button (click)="clearFilters()" [disabled]="isDefaultFilters()" class="btn-clear">
+                    Clear
+                </button>
             </div>
 
-            <div class="filter-pills">
-                <span class="filter-label">Direction:</span>
-                <button
-                        (click)="onFiltersChange({...filters(), type: 'ALL'})"
-                        [class]="filters().type === 'ALL' ? 'active-default' : 'inactive'"
-                        class="pill"
-                >All
-                </button>
-                <button
-                        (click)="onFiltersChange({...filters(), type: 'LONG'})"
-                        [class]="filters().type === 'LONG' ? 'active-green' : 'inactive'"
-                        class="pill"
-                >▲ Long
-                </button>
-                <button
-                        (click)="onFiltersChange({...filters(), type: 'SHORT'})"
-                        [class]="filters().type === 'SHORT' ? 'active-amber' : 'inactive'"
-                        class="pill"
-                >▼ Short
-                </button>
+            <div class="filters-content">
+                <div class="search-section">
+                    <div class="search-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input
+                                (ngModelChange)="onSearchChange($event)"
+                                [(ngModel)]="search"
+                                class="search-input"
+                                placeholder="Search..."
+                                type="text"
+                        >
+                        @if (search()) {
+                            <button (click)="onSearchChange('')" class="search-clear">×</button>
+                        }
+                    </div>
+                </div>
 
-                <div class="divider"></div>
+                <div class="filter-groups">
+                    <div class="filter-group">
+                        <div class="group-label">
+                            <span class="group-icon">📈</span>
+                            Direction
+                        </div>
+                        <div class="filter-chips">
+                            <button
+                                    (click)="onTypeFilterChange('ALL')"
+                                    [class]="filters().type === 'ALL' ? 'chip-active' : 'chip-inactive'"
+                                    class="chip"
+                            >All
+                            </button>
+                            <button
+                                    (click)="onTypeFilterChange('LONG')"
+                                    [class]="filters().type === 'LONG' ? 'chip-active chip-green' : 'chip-inactive'"
+                                    class="chip"
+                            >▲ Long
+                            </button>
+                            <button
+                                    (click)="onTypeFilterChange('SHORT')"
+                                    [class]="filters().type === 'SHORT' ? 'chip-active chip-amber' : 'chip-inactive'"
+                                    class="chip"
+                            >▼ Short
+                            </button>
+                        </div>
+                    </div>
 
-                <span class="filter-label">Status:</span>
-                <button
-                        (click)="onFiltersChange({...filters(), status: 'ALL'})"
-                        [class]="filters().status === 'ALL' ? 'active-default' : 'inactive'"
-                        class="pill"
-                >All
-                </button>
-                <button
-                        (click)="onFiltersChange({...filters(), status: 'OPEN'})"
-                        [class]="filters().status === 'OPEN' ? 'active-amber' : 'inactive'"
-                        class="pill"
-                >Open
-                </button>
-                <button
-                        (click)="onFiltersChange({...filters(), status: 'CLOSED'})"
-                        [class]="filters().status === 'CLOSED' ? 'active-green' : 'inactive'"
-                        class="pill"
-                >Closed
-                </button>
+                    <div class="filter-group">
+                        <div class="group-label">
+                            <span class="group-icon">📋</span>
+                            Status
+                        </div>
+                        <div class="filter-chips">
+                            <button
+                                    (click)="onStatusFilterChange('ALL')"
+                                    [class]="filters().status === 'ALL' ? 'chip-active' : 'chip-inactive'"
+                                    class="chip"
+                            >All
+                            </button>
+                            <button
+                                    (click)="onStatusFilterChange('OPEN')"
+                                    [class]="filters().status === 'OPEN' ? 'chip-active chip-amber' : 'chip-inactive'"
+                                    class="chip"
+                            >Open
+                            </button>
+                            <button
+                                    (click)="onStatusFilterChange('CLOSED')"
+                                    [class]="filters().status === 'CLOSED' ? 'chip-active chip-green' : 'chip-inactive'"
+                                    class="chip"
+                            >Closed
+                            </button>
+                        </div>
+                    </div>
 
-                <div class="divider"></div>
-
-                <span class="filter-label">Date:</span>
-                <button
-                        (click)="onFiltersChange({...filters(), date: 'ALL'})"
-                        [class]="filters().date === 'ALL' ? 'active-default' : 'inactive'"
-                        class="pill"
-                >All time
-                </button>
-                <button
-                        (click)="onFiltersChange({...filters(), date: 'TODAY'})"
-                        [class]="filters().date === 'TODAY' ? 'active-default' : 'inactive'"
-                        class="pill"
-                >Today
-                </button>
-                <button
-                        (click)="onFiltersChange({...filters(), date: 'WEEK'})"
-                        [class]="filters().date === 'WEEK' ? 'active-default' : 'inactive'"
-                        class="pill"
-                >This week
-                </button>
+                    <div class="filter-group">
+                        <div class="group-label">
+                            <span class="group-icon">📅</span>
+                            Time Period
+                        </div>
+                        <div class="filter-chips">
+                            <button
+                                    (click)="onDateFilterChange('ALL')"
+                                    [class]="filters().date === 'ALL' ? 'chip-active' : 'chip-inactive'"
+                                    class="chip"
+                            >All Time
+                            </button>
+                            <button
+                                    (click)="onDateFilterChange('TODAY')"
+                                    [class]="filters().date === 'TODAY' ? 'chip-active' : 'chip-inactive'"
+                                    class="chip"
+                            >Today
+                            </button>
+                            <button
+                                    (click)="onDateFilterChange('WEEK')"
+                                    [class]="filters().date === 'WEEK' ? 'chip-active' : 'chip-inactive'"
+                                    class="chip"
+                            >This Week
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -207,30 +240,20 @@
 
             <!-- Pagination -->
             @if (pages() > 1) {
-                <div class="pagination">
-                    <p class="pagination-info">Page {{ page() + 1 }} of {{ pages() }}</p>
-                    <div class="pagination-controls">
-                        <button
-                                (click)="changePage(page() - 1)"
-                                [disabled]="page() === 0"
-                                class="btn-ghost"
-                        >← Prev
-                        </button>
-                        @for (p of createArray(pages()); track p; let i = $index) {
-                            <button
-                                    (click)="changePage(i)"
-                                    [class.active]="page() === i"
-                                    class="page-btn"
-                            >{{ i + 1 }}
-                            </button>
-                        }
-                        <button
-                                (click)="changePage(page() + 1)"
-                                [disabled]="page() >= pages() - 1"
-                                class="btn-ghost"
-                        >Next →
-                        </button>
-                    </div>
+                <div class="pagination simple">
+                    <button
+                            (click)="changePage(page() - 1)"
+                            [disabled]="page() === 0"
+                            class="page-btn"
+                    >‹
+                    </button>
+                    <span class="page-info">{{ page() + 1 }} / {{ pages() }}</span>
+                    <button
+                            (click)="changePage(page() + 1)"
+                            [disabled]="page() >= pages() - 1"
+                            class="page-btn"
+                    >›
+                    </button>
                 </div>
             }
         </div>

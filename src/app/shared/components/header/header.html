@@ -1,0 +1,56 @@
+<header class="app-header">
+    <div class="header-content">
+        <div class="header-left">
+            <div class="wordmark">
+                <div class="logo">📒</div>
+                <span class="app-name">TradeJournal</span>
+            </div>
+            <nav class="nav">
+                @for (item of navItems(); track item.label) {
+                    <button 
+                        class="nav-btn" 
+                        [class.active]="item.active"
+                        (click)="navigateTo(item)"
+                    >
+                        {{ item.icon }} {{ item.label }}
+                    </button>
+                }
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="profile-section" 
+                 #profileSection
+                 (click)="toggleMenu($event)">
+                <span class="username">{{ username() }}</span>
+                <div class="avatar">{{ userInitial() }}</div>
+                
+                @if (isMenuVisible()) {
+                    <div class="profile-menu" 
+                         (click)="$event.stopPropagation()">
+                        <div class="menu-header">
+                            <div class="menu-avatar">{{ userInitial() }}</div>
+                            <div class="menu-user-info">
+                                <p class="menu-username">{{ username() }}</p>
+                                <p class="menu-email">{{ username() }}@tradejournal.com</p>
+                            </div>
+                        </div>
+                        <div class="menu-divider"></div>
+                        <button class="menu-item" (click)="viewProfile()">
+                            <span class="menu-icon">👤</span>
+                            <span>Profile</span>
+                        </button>
+                        <button class="menu-item" (click)="viewSettings()">
+                            <span class="menu-icon">⚙️</span>
+                            <span>Settings</span>
+                        </button>
+                        <div class="menu-divider"></div>
+                        <button class="menu-item logout" (click)="logout()">
+                            <span class="menu-icon">🚪</span>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</header>

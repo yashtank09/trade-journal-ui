@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+// Header
+.app-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(247,245,240,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid #E8E4DC; padding: 0 28px;
+}
+.header-content {
+  max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 58px;
+}
+.header-left { display: flex; align-items: center; gap: 32px; }
+.wordmark { display: flex; align-items: center; gap: 9px; }
+.logo { width: 30px; height: 30px; background: #2D6A4F; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 2px 8px rgba(45,106,79,0.22); }
+.logo span { filter: brightness(10); }
+.app-name { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; color: #1A1A1A; letter-spacing: -0.01em; }
+.nav { display: flex; gap: 2px; }
+.nav-btn { background: transparent; border: 1px solid transparent; color: #5A5A5A; border-radius: 7px; padding: 5px 13px; cursor: pointer; font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 5px; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+.nav-btn.active { background: #EAF3EE; border: 1px solid #A8D5BC; color: #1E5C3F; font-weight: 700; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.username { font-size: 13px; color: #5A5A5A; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: #2D6A4F; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+
+// Profile Section
+.profile-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #FFFFFF;
+  border: 1px solid #E8E4DC;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  min-width: 240px;
+  z-index: 9999;
+  animation: fadeInUp 0.2s ease-out;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.menu-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2D6A4F;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.menu-user-info {
+  flex: 1;
+}
+
+.menu-username {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin: 0 0 2px 0;
+}
+
+.menu-email {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: #9A9A9A;
+  margin: 0;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #F0EDE7;
+  margin: 0;
+}
+
+.menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #5A5A5A;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background: #FAFAF8;
+  color: #1A1A1A;
+}
+
+.menu-item.logout:hover {
+  background: #FDECEA;
+  color: #C0392B;
+}
+
+.menu-icon {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

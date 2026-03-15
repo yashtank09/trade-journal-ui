@@ -3,14 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Trade, TradeFilters, SummaryStat } from '../../models/trade.model';
 import { TradeService } from '../../services/trade.service';
+import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
-  selector: 'app-trade-logs',
-  imports: [CommonModule, FormsModule],
-  templateUrl: './trade-logs.html',
-  styleUrl: './trade-logs.scss'
+  selector: 'app-trade-summary',
+  imports: [CommonModule, FormsModule, SharedModule],
+  templateUrl: './trade-summary.html',
+  styleUrl: './trade-summary.scss'
 })
-export class TradeLogsComponent {
+export class TradeSummaryComponent {
   readonly C = {
     bg: "#F7F5F0", surface: "#FFFFFF", surfaceAlt: "#FAFAF8", border: "#E8E4DC",
     borderLight: "#F0EDE7", ink: "#1A1A1A", inkMid: "#5A5A5A", inkLight: "#9A9A9A",
@@ -81,6 +82,21 @@ export class TradeLogsComponent {
     this.page.set(0);
   }
 
+  onTypeFilterChange(type: 'ALL' | 'LONG' | 'SHORT') {
+    this.filters.update(current => ({ ...current, type }));
+    this.page.set(0);
+  }
+
+  onStatusFilterChange(status: 'ALL' | 'OPEN' | 'CLOSED') {
+    this.filters.update(current => ({ ...current, status }));
+    this.page.set(0);
+  }
+
+  onDateFilterChange(date: 'ALL' | 'TODAY' | 'WEEK') {
+    this.filters.update(current => ({ ...current, date }));
+    this.page.set(0);
+  }
+
   onSearchChange(value: string) {
     this.search.set(value);
     this.page.set(0);
@@ -130,5 +146,34 @@ export class TradeLogsComponent {
 
   createArray(length: number): number[] {
     return Array.from({ length }, (_, i) => i);
+  }
+
+  getStatIcon(label: string): string {
+    switch (label) {
+      case 'Trades shown': return '📊';
+      case 'Net P&L': return '💰';
+      case 'Win rate': return '🎯';
+      case 'Wins / Losses': return '⚖️';
+      default: return '📈';
+    }
+  }
+
+  getStatChange(label: string): boolean {
+    // Simulate some stats having change indicators
+    return label === 'Net P&L' || label === 'Win rate';
+  }
+
+  isDefaultFilters(): boolean {
+    const f = this.filters();
+    return f.type === 'ALL' && f.status === 'ALL' && f.date === 'ALL' && !this.search();
+  }
+
+  getCurrentDateString(): string {
+    return new Date().toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
   }
 }
