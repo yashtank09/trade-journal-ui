@@ -110,6 +110,50 @@
   }
 }
 
+// Header Actions Container
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+// Secondary Button Style
+.btn-secondary {
+  background: #FFFFFF;
+  color: #5A5A5A;
+  border: 2px solid #E8E4DC;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  
+  .btn-icon {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  
+  .btn-text {
+    font-size: 0.95rem;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #2D6A4F;
+    color: #2D6A4F;
+    box-shadow: 0 4px 16px rgba(45, 106, 79, 0.2);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 // Enhanced Summary Cards
 .summary-cards {
   display: grid;
@@ -417,10 +461,382 @@
   overflow: hidden;
 }
 
+// Custom Date Filter Styles
+.custom-date-filter {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #E8E4DC;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .date-range-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #9A9A9A;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #F0EDE7;
+        color: #5A5A5A;
+      }
+    }
+  }
+
+  .date-range-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: end;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .date-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #5A5A5A;
+      }
+
+      .date-input {
+        padding: 0.75rem;
+        border: 1px solid #E8E4DC;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+
+        &:focus {
+          outline: none;
+          border-color: #2D6A4F;
+          box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        }
+      }
+    }
+
+    .date-range-actions {
+      grid-column: span 2;
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+
+      @media (max-width: 768px) {
+        grid-column: span 1;
+      }
+
+      .btn-secondary {
+        background: #F7F5F0;
+        color: #5A5A5A;
+        border: 1px solid #E8E4DC;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #E8E4DC;
+        }
+      }
+
+      .btn-primary {
+        background: #2D6A4F;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: #1E5C3F;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// PrimeNG Table Custom Styles
+::ng-deep .trade-table {
+  .p-datatable {
+    background: #FFFFFF !important;
+    border-radius: 20px;
+    border: 1px solid #E8E4DC;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    color: #1A1A1A !important;
+
+    .p-datatable-header {
+      background: linear-gradient(135deg, #FAFAF8 0%, #F7F5F0 100%) !important;
+      border-bottom: 1px solid #E8E4DC;
+      padding: 0;
+      color: #5A5A5A !important;
+
+      th {
+        background: transparent !important;
+        border: none !important;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        color: #5A5A5A !important;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &:first-child {
+          border-radius: 0;
+        }
+
+        &:last-child {
+          border-radius: 0;
+        }
+      }
+    }
+
+    .p-datatable-tbody {
+      tr {
+        border-bottom: 1px solid #F0EDE7;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #FFFFFF !important;
+        color: #1A1A1A !important;
+
+        &:hover {
+          background: #FAFAF8 !important;
+        }
+
+        &.selected-row {
+          background: #EAF3EE !important;
+        }
+
+        td {
+          border: none !important;
+          padding: 1rem 1.5rem;
+          vertical-align: middle;
+          background: transparent !important;
+          color: #1A1A1A !important;
+
+          &:first-child {
+            border-radius: 0;
+          }
+
+          &:last-child {
+            border-radius: 0;
+          }
+        }
+      }
+    }
+
+    .p-paginator {
+      background: #FAFAF8 !important;
+      border-top: 1px solid #E8E4DC;
+      padding: 1rem 1.5rem;
+      border-radius: 0 0 20px 20px;
+      color: #5A5A5A !important;
+
+      .p-paginator-current {
+        color: #5A5A5A !important;
+        font-size: 0.9rem;
+        margin-right: auto;
+      }
+
+      .p-paginator-first,
+      .p-paginator-prev,
+      .p-paginator-next,
+      .p-paginator-last {
+        background: #FFFFFF !important;
+        border: 1px solid #E8E4DC !important;
+        border-radius: 8px;
+        margin: 0 0.25rem;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        transition: all 0.2s ease;
+        color: #1A1A1A !important;
+
+        &:hover:not(:disabled) {
+          background: #F7F5F0 !important;
+          border-color: #2D6A4F !important;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+        }
+
+        .p-paginator-icon {
+          color: #1A1A1A !important;
+        }
+      }
+
+      .p-paginator-pages {
+        .p-paginator-page {
+          background: #FFFFFF !important;
+          border: 1px solid #E8E4DC !important;
+          border-radius: 8px;
+          margin: 0 0.25rem;
+          min-width: 2.5rem;
+          height: 2.5rem;
+          transition: all 0.2s ease;
+          color: #1A1A1A !important;
+
+          &:hover {
+            background: #F7F5F0 !important;
+            border-color: #2D6A4F !important;
+          }
+
+          &.p-paginator-page-selected {
+            background: #2D6A4F !important;
+            border-color: #2D6A4F !important;
+            color: white !important;
+          }
+        }
+      }
+
+      .p-dropdown {
+        background: #FFFFFF !important;
+        border: 1px solid #E8E4DC !important;
+        border-radius: 8px;
+        margin-left: 0.5rem;
+        color: #1A1A1A !important;
+
+        &:hover {
+          border-color: #2D6A4F !important;
+        }
+
+        .p-dropdown-label {
+          color: #1A1A1A !important;
+        }
+      }
+    }
+  }
+}
+
+// PrimeNG Tag Component Styling
+::ng-deep .trade-table {
+  .p-tag {
+    &.p-tag-success {
+      background: #EAF3EE !important;
+      color: #1E5C3F !important;
+      border: 1px solid #A8D5BC !important;
+    }
+
+    &.p-tag-warning {
+      background: #FEF3C7 !important;
+      color: #B45309 !important;
+      border: 1px solid #FCD34D !important;
+    }
+
+    &.p-tag-info {
+      background: #EEF2FF !important;
+      color: #4338CA !important;
+      border: 1px solid #818CF8 !important;
+    }
+
+    &.p-tag-rounded {
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      font-size: 0.8rem !important;
+      padding: 0.25rem 0.75rem !important;
+    }
+  }
+}
+
+// Table Cell Styles for PrimeNG
+.datetime-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+  .date {
+    margin: 0;
+    font-weight: 600;
+    color: #1A1A1A;
+    font-size: 0.9rem;
+  }
+  
+  .time {
+    margin: 0;
+    color: #5A5A5A;
+    font-size: 0.8rem;
+    font-weight: 400;
+  }
+}
+
+.instrument-cell {
+  .instrument-name {
+    margin: 0;
+    font-weight: 700;
+    color: #1A1A1A;
+    font-size: 1.05rem;
+  }
+}
+
+.price-cell {
+  font-weight: 600;
+  color: #1A1A1A;
+  font-size: 0.95rem;
+}
+
+.qty-cell {
+  font-weight: 500;
+  color: #5A5A5A;
+  font-size: 0.9rem;
+}
+
+.pnl-cell {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.placeholder {
+  color: #9A9A9A;
+  font-style: italic;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
 // Enhanced Table Cell Alignment
 .table-header {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1.2fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
   padding: 1rem 1.5rem;
   background: linear-gradient(135deg, #FAFAF8 0%, #F7F5F0 100%);
   font-weight: 600;
@@ -446,7 +862,7 @@
 
 .trade-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1.2fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
   padding: 1rem 1.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -476,6 +892,26 @@
 }
 
 // Enhanced Cell Styles
+.datetime-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+  .date {
+    margin: 0;
+    font-weight: 600;
+    color: #1A1A1A;
+    font-size: 0.9rem;
+  }
+  
+  .time {
+    margin: 0;
+    color: #5A5A5A;
+    font-size: 0.8rem;
+    font-weight: 400;
+  }
+}
+
 .instrument-cell {
   .instrument-name {
     margin: 0;
@@ -593,7 +1029,7 @@
   
   .table-header,
   .trade-row {
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1.2fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
     gap: 0.5rem;
   }
   
@@ -1026,6 +1462,53 @@
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
+  }
+}
+
+// Upload Modal Styles
+.upload-modal {
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #E8E4DC;
+    
+    h2 {
+      margin: 0;
+      color: #1A1A1A;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #5A5A5A;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: #F7F5F0;
+        color: #1A1A1A;
+      }
+    }
+  }
+  
+  // Ensure file upload component doesn't overflow
+  .file-upload-container {
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+    padding: 0;
   }
 }
 

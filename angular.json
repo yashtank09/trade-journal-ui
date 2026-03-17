@@ -58,8 +58,7 @@
               },
               {
                 "glob": "**/*",
-                "input": "src/assets",
-                "optional": true
+                "input": "src/assets"
               }
             ],
             "styles": [
@@ -89,12 +88,7 @@
                 "fonts": true
               },
               "outputHashing": "all",
-              "sourceMap": {
-                "scripts": false,
-                "styles": false,
-                "hidden": false,
-                "vendors": false
-              },
+              "sourceMap": false,
               "extractLicenses": true,
               "budgets": [
                 {
@@ -120,9 +114,6 @@
                 }
               ],
               "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "aot": true,
               "strict": true,
               "preserveSymlinks": false,
@@ -145,17 +136,9 @@
                 },
                 "fonts": false
               },
-              "sourceMap": {
-                "scripts": true,
-                "styles": true,
-                "hidden": false,
-                "vendors": true
-              },
+              "sourceMap": true,
               "extractLicenses": false,
-              "vendorChunk": true,
-              "buildOptimizer": false,
               "aot": false,
-              "extractCss": false,
               "namedChunks": true,
               "preserveSymlinks": true,
               "watch": true,
@@ -177,12 +160,7 @@
                 "fonts": true
               },
               "outputHashing": "media",
-              "sourceMap": {
-                "scripts": true,
-                "styles": false,
-                "hidden": true,
-                "vendors": false
-              },
+              "sourceMap": true,
               "extractLicenses": true,
               "budgets": [
                 {
@@ -198,8 +176,6 @@
               ],
               "namedChunks": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "aot": true,
               "strict": true,
               "preserveSymlinks": false,
@@ -220,17 +196,9 @@
                 },
                 "fonts": false
               },
-              "sourceMap": {
-                "scripts": true,
-                "styles": true,
-                "hidden": false,
-                "vendors": true
-              },
+              "sourceMap": true,
               "extractLicenses": false,
-              "vendorChunk": true,
-              "buildOptimizer": false,
               "aot": false,
-              "extractCss": false,
               "namedChunks": true,
               "preserveSymlinks": true,
               "watch": true,

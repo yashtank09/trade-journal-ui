@@ -22,10 +22,16 @@
                     </div>
                     <p class="page-subtitle">Sorted by date · {{ getCurrentDateString() }}</p>
                 </div>
-                <button (click)="addTrade()" class="btn-primary">
-                    <span class="btn-icon">+</span>
-                    <span class="btn-text">Log Trade</span>
-                </button>
+                <div class="header-actions">
+                    <button (click)="showUploadModal()" class="btn-secondary">
+                        <span class="btn-icon">📁</span>
+                        <span class="btn-text">Upload File</span>
+                    </button>
+                    <button (click)="addTrade()" class="btn-primary">
+                        <span class="btn-icon">+</span>
+                        <span class="btn-text">Log Trade</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -64,14 +70,14 @@
                     <div class="search-wrapper">
                         <span class="search-icon">🔍</span>
                         <input
-                                (ngModelChange)="onSearchChange($event)"
-                                [(ngModel)]="search"
+                                #globalFilter
+                                (input)="onGlobalFilter(dt, $event)"
                                 class="search-input"
-                                placeholder="Search..."
+                                placeholder="Search trades..."
                                 type="text"
                         >
                         @if (search()) {
-                            <button (click)="onSearchChange('')" class="search-clear">×</button>
+                            <button (click)="clearFilters(); globalFilter.value = ''" class="search-clear">×</button>
                         }
                     </div>
                 </div>
@@ -155,108 +161,178 @@
                                     class="chip"
                             >This Week
                             </button>
+                            <button
+                                    (click)="onDateFilterChange('MONTH')"
+                                    [class]="filters().date === 'MONTH' ? 'chip-active' : 'chip-inactive'"
+                                    class="chip"
+                            >This Month
+                            </button>
+                            <button
+                                    (click)="toggleCustomDateFilter()"
+                                    [class]="filters().date === 'CUSTOM' ? 'chip-active' : 'chip-inactive'"
+                                    class="chip"
+                            >Custom Range
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Table Card -->
-        <div class="table-card">
-            <!-- Column Headers -->
-            <div class="table-header">
-                <span>Instrument</span>
-                <span>Type</span>
-                <span>Entry</span>
-                <span>Exit</span>
-                <span>Qty</span>
-                <span>Net P&L</span>
-                <span>Status</span>
-            </div>
-
-            <!-- Rows -->
-            @if (pageRows().length > 0) {
-                @for (trade of pageRows(); track trade.id; let i = $index) {
-                    <div>
-                        <div
-                                (click)="selectTrade(trade)"
-                                [class.selected]="selected()?.id === trade.id"
-                                class="trade-row"
+        <!-- Custom Date Range Picker -->
+        @if (showCustomDateFilter()) {
+            <div class="custom-date-filter">
+                <div class="date-range-header">
+                    <h4>Custom Date Range</h4>
+                    <button (click)="clearCustomDateFilter()" class="btn-close">×</button>
+                </div>
+                <div class="date-range-content">
+                    <div class="date-input-group">
+                        <label for="start-date">From:</label>
+                        <input
+                                id="start-date"
+                                [(ngModel)]="customStartDate"
+                                type="date"
+                                class="date-input"
                         >
-                            <!-- Instrument -->
-                            <div class="instrument-cell">
-                                <p class="instrument-name">{{ trade.instrument }}</p>
-                                <p class="instrument-date">{{ trade.date }} · {{ trade.time }}</p>
-                            </div>
-
-                            <!-- Type Badge -->
-                            <span [class.long]="trade.type === 'LONG'" [class.short]="trade.type === 'SHORT'"
-                                  class="type-badge">
-                {{ trade.type === 'LONG' ? '▲ LONG' : '▼ SHORT' }}
-              </span>
-
-                            <!-- Entry Price -->
-                            <span class="price-cell">₹{{ trade.entry.toLocaleString('en-IN') }}</span>
-
-                            <!-- Exit Price -->
-                            <span class="price-cell">
-                @if (trade.exit) {
-                    ₹{{ trade.exit.toLocaleString('en-IN') }}
-                } @else {
-                    <span class="placeholder">—</span>
-                }
-              </span>
-
-                            <!-- Quantity -->
-                            <span class="qty-cell">{{ trade.qty }}</span>
-
-                            <!-- Net P&L -->
-                            <span [style]="pnlStyle(trade.netPnl)" class="pnl-cell">
-                @if (trade.netPnl !== null) {
-                    {{ fmtPnl(trade.netPnl) }}
-                } @else {
-                    <span class="status-badge open">OPEN</span>
-                }
-              </span>
-
-                            <!-- Status -->
-                            <span [class.closed]="trade.status === 'CLOSED'" [class.open]="trade.status === 'OPEN'"
-                                  class="status-badge">
-                {{ trade.status }}
-              </span>
-                        </div>
-                        @if (i < pageRows().length - 1) {
-                            <div class="divider-row"></div>
-                        }
                     </div>
-                }
-            } @else {
-                <div class="empty-state">
-                    <div class="empty-icon">📭</div>
-                    <p class="empty-title">No trades match your filters</p>
-                    <button (click)="clearFilters()" class="btn-ghost">Clear all filters</button>
+                    <div class="date-input-group">
+                        <label for="end-date">To:</label>
+                        <input
+                                id="end-date"
+                                [(ngModel)]="customEndDate"
+                                type="date"
+                                class="date-input"
+                        >
+                    </div>
+                    <div class="date-range-actions">
+                        <button (click)="clearCustomDateFilter()" class="btn-secondary">Clear</button>
+                        <button 
+                                (click)="applyCustomDateFilter()"
+                                [disabled]="!customStartDate() || !customEndDate()"
+                                class="btn-primary"
+                        >
+                            Apply Filter
+                        </button>
+                    </div>
                 </div>
-            }
+            </div>
+        }
 
-            <!-- Pagination -->
-            @if (pages() > 1) {
-                <div class="pagination simple">
-                    <button
-                            (click)="changePage(page() - 1)"
-                            [disabled]="page() === 0"
-                            class="page-btn"
-                    >‹
-                    </button>
-                    <span class="page-info">{{ page() + 1 }} / {{ pages() }}</span>
-                    <button
-                            (click)="changePage(page() + 1)"
-                            [disabled]="page() >= pages() - 1"
-                            class="page-btn"
-                    >›
-                    </button>
-                </div>
-            }
-        </div>
+        <!-- PrimeNG Table -->
+        <p-table 
+            #dt
+            [value]="filtered()" 
+            [paginator]="true" 
+            [rows]="rows()" 
+            [first]="first()"
+            [totalRecords]="filtered().length"
+            [rowsPerPageOptions]="[7, 14, 21]"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} trades"
+            [lazy]="false"
+            (onPage)="onPageChange($event)"
+            [globalFilterFields]="globalFilterFields"
+            [scrollable]="true"
+            scrollHeight="flex"
+            [style]="{'border-radius': '20px', 'overflow': 'hidden'}"
+            tableStyleClass="trade-table"
+        >
+            <!-- Header -->
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 12%">Date & Time</th>
+                    <th style="width: 20%">Instrument</th>
+                    <th style="width: 12%">Type</th>
+                    <th style="width: 12%">Entry</th>
+                    <th style="width: 12%">Exit</th>
+                    <th style="width: 10%">Qty</th>
+                    <th style="width: 12%">Net P&L</th>
+                    <th style="width: 10%">Status</th>
+                </tr>
+            </ng-template>
+
+            <!-- Body -->
+            <ng-template pTemplate="body" let-trade>
+                <tr [class.selected-row]="selected()?.id === trade.id" (click)="selectTrade(trade)">
+                    <!-- Date & Time -->
+                    <td>
+                        <div class="datetime-cell">
+                            <p class="date">{{ trade.openedAt.split('T')[0] }}</p>
+                            <p class="time">{{ trade.openedAt.split('T')[1].substring(0, 5) }}</p>
+                        </div>
+                    </td>
+
+                    <!-- Instrument -->
+                    <td>
+                        <div class="instrument-cell">
+                            <p class="instrument-name">{{ trade.symbol }}</p>
+                        </div>
+                    </td>
+
+                    <!-- Type Badge -->
+                    <td>
+                        <p-tag 
+                            [value]="trade.direction === 'LONG' ? '▲ LONG' : '▼ SHORT'"
+                            [severity]="trade.direction === 'LONG' ? 'success' : 'warning'"
+                            [rounded]="true"
+                        ></p-tag>
+                    </td>
+
+                    <!-- Entry Price -->
+                    <td class="text-right">
+                        <span class="price-cell">₹{{ trade.entryAvgPrice.toLocaleString('en-IN') }}</span>
+                    </td>
+
+                    <!-- Exit Price -->
+                    <td class="text-right">
+                        @if (trade.positionStatus === 'CLOSED') {
+                            <span class="price-cell">₹{{ trade.exitAvgPrice.toLocaleString('en-IN') }}</span>
+                        } @else {
+                            <span class="placeholder">—</span>
+                        }
+                    </td>
+
+                    <!-- Quantity -->
+                    <td class="text-center">
+                        <span class="qty-cell">{{ trade.entryQty }}</span>
+                    </td>
+
+                    <!-- Net P&L -->
+                    <td class="text-right">
+                        @if (trade.positionStatus === 'CLOSED') {
+                            <span [style]="pnlStyle(trade.realizedPnl)" class="pnl-cell">
+                                {{ fmtPnl(trade.realizedPnl) }}
+                            </span>
+                        } @else {
+                            <p-tag value="OPEN" severity="info" [rounded]="true"></p-tag>
+                        }
+                    </td>
+
+                    <!-- Status -->
+                    <td class="text-center">
+                        <p-tag 
+                            [value]="trade.positionStatus"
+                            [severity]="trade.positionStatus === 'CLOSED' ? 'success' : 'info'"
+                            [rounded]="true"
+                        ></p-tag>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <!-- Empty Message -->
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8" class="text-center py-8">
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <p class="empty-title">No trades match your filters</p>
+                            <button (click)="clearFilters()" pButton label="Clear all filters" class="p-button-outlined"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
 
         <!-- Helpful tip -->
         <p class="help-tip">💡 Click any row to view full trade details</p>
@@ -269,16 +345,16 @@
             <!-- Header -->
             <div class="panel-header">
                 <div>
-                    <h2>{{ selected()!.instrument }}</h2>
+                    <h2>{{ selected()!.symbol }}</h2>
                     <div class="panel-badges">
-            <span [class.long]="selected()!.type === 'LONG'" [class.short]="selected()!.type === 'SHORT'"
+            <span [class.long]="selected()!.direction === 'LONG'" [class.short]="selected()!.direction === 'SHORT'"
                   class="type-badge">
-              {{ selected()!.type === 'LONG' ? '▲ LONG' : '▼ SHORT' }}
+              {{ selected()!.direction === 'LONG' ? '▲ LONG' : '▼ SHORT' }}
             </span>
-                        <span [class.closed]="selected()!.status === 'CLOSED'"
-                              [class.open]="selected()!.status === 'OPEN'"
+                        <span [class.closed]="selected()!.positionStatus === 'CLOSED'"
+                              [class.open]="selected()!.positionStatus === 'OPEN'"
                               class="status-badge">
-              {{ selected()!.status }}
+              {{ selected()!.positionStatus }}
             </span>
                     </div>
                 </div>
@@ -289,25 +365,25 @@
             </div>
 
             <!-- P&L Hero -->
-            <div [class.loss]="selected()!.netPnl! < 0" [class.open]="selected()!.status === 'OPEN'"
-                 [class.profit]="selected()!.netPnl! > 0"
+            <div [class.loss]="selected()!.realizedPnl < 0" [class.open]="selected()!.positionStatus === 'OPEN'"
+                 [class.profit]="selected()!.realizedPnl > 0"
                  class="pnl-hero">
-                <p class="pnl-label">{{ selected()!.status === 'OPEN' ? 'Position Status' : 'Net P&L' }}</p>
+                <p class="pnl-label">{{ selected()!.positionStatus === 'OPEN' ? 'Position Status' : 'Net P&L' }}</p>
                 <p class="pnl-amount">
-                    {{ selected()!.status === 'OPEN' ? 'OPEN' : fmtPnl(selected()!.netPnl) }}
+                    {{ selected()!.positionStatus === 'OPEN' ? 'OPEN' : fmtPnl(selected()!.realizedPnl) }}
                 </p>
-                @if (selected()!.status !== 'OPEN') {
-                    <p class="pnl-details">Entry ₹{{ selected()!.entry.toLocaleString('en-IN') }} → Exit
-                        ₹{{ selected()!.exit?.toLocaleString('en-IN') }}</p>
+                @if (selected()!.positionStatus !== 'OPEN') {
+                    <p class="pnl-details">Entry ₹{{ selected()!.entryAvgPrice.toLocaleString('en-IN') }} → Exit
+                        ₹{{ selected()!.exitAvgPrice.toLocaleString('en-IN') }}</p>
                 }
             </div>
 
             <!-- Key Facts Grid -->
             <div class="facts-grid">
                 @for (item of [
-                    ['Date', selected()!.date],
-                    ['Time', selected()!.time || '—'],
-                    ['Qty', selected()!.qty],
+                    ['Date', selected()!.openedAt.split('T')[0]],
+                    ['Time', selected()!.openedAt.split('T')[1].substring(0, 5)],
+                    ['Qty', selected()!.entryQty],
                     ['Emotion', selected()!.emotion || '—']
                 ]; track item[0]) {
                     <div class="fact-item">
@@ -355,6 +431,19 @@
                 <div class="form-actions">
                     <button (click)="closeForm()" class="btn-ghost">Cancel</button>
                 </div>
+            </div>
+        </div>
+    }
+
+    <!-- File Upload Modal -->
+    @if (showUploadModalSignal()) {
+        <div (click)="closeUploadModal()" class="modal-overlay">
+            <div (click)="$event.stopPropagation()" class="modal-card upload-modal">
+                <div class="modal-header">
+                    <h2>Upload Trade File</h2>
+                    <button (click)="closeUploadModal()" class="close-btn">✕</button>
+                </div>
+                <app-file-upload (uploadSuccess)="onUploadSuccess()"></app-file-upload>
             </div>
         </div>
     }
