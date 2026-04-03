@@ -1,4 +1,31 @@
 // Modern Trade Summary Component Styles
+
+// ─── Force PrimeNG Aura to light mode within this component ────────────────
+// The Aura theme uses CSS vars like --p-surface-* for its dark palette.
+// We reset the ones that affect the table header and body backgrounds.
+::ng-deep .trade-summary-container {
+  --p-datatable-header-cell-background: #FAFAF8;
+  --p-datatable-header-cell-color: #5A5A5A;
+  --p-datatable-body-cell-background: #FFFFFF;
+  --p-datatable-body-row-background: #FFFFFF;
+  --p-datatable-body-row-color: #1A1A1A;
+  --p-datatable-body-row-hover-background: #FAFAF8;
+  --p-datatable-border-color: #E8E4DC;
+  --p-paginator-background: #FAFAF8;
+  --p-paginator-color: #5A5A5A;
+  --p-surface-0: #FFFFFF;
+  --p-surface-50: #FAFAF8;
+  --p-surface-100: #F7F5F0;
+  --p-surface-200: #E8E4DC;
+  --p-surface-700: #5A5A5A;
+  --p-surface-800: #2D2D2D;
+  --p-surface-900: #1A1A1A;
+  --p-content-color: #1A1A1A;
+  --p-content-background: #FFFFFF;
+  --p-content-hover-background: #FAFAF8;
+  --p-content-border-color: #E8E4DC;
+}
+
 .trade-summary-container {
   min-height: 100vh;
   font-family: 'DM Sans', sans-serif;
@@ -437,7 +464,7 @@
     }
     
     &:not(.chip-green):not(.chip-amber) {
-      background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
+      background: linear-gradient(135deg, #2D6A4F 0%, #1E5C3F 100%);
     }
   }
   
@@ -449,6 +476,40 @@
       background: #FFFFFF;
       border-color: #2D6A4F;
     }
+  }
+  
+  .chip-dir-icon {
+    font-size: 0.7rem;
+    vertical-align: middle;
+    margin-right: 0.1rem;
+  }
+}
+
+// Direction Badge (replaces p-tag for trade direction in table)
+.dir-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  
+  &--long {
+    background: #EAF3EE;
+    color: #1E5C3F;
+    border: 1px solid #A8D5BC;
+    
+    i { color: #2D6A4F; font-size: 0.7rem; }
+  }
+  
+  &--short {
+    background: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #FCD34D;
+    
+    i { color: #B45309; font-size: 0.7rem; }
   }
 }
 
@@ -585,155 +646,148 @@
   }
 }
 
-// PrimeNG Table Custom Styles
+// PrimeNG Table Custom Styles — comprehensive v18 Aura theme light override
 ::ng-deep .trade-table {
-  .p-datatable {
+
+  // ── Outer wrapper ──────────────────────────────────────────────
+  .p-datatable,
+  .p-datatable-table-container {
     background: #FFFFFF !important;
-    border-radius: 20px;
-    border: 1px solid #E8E4DC;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
     color: #1A1A1A !important;
+  }
 
-    .p-datatable-header {
-      background: linear-gradient(135deg, #FAFAF8 0%, #F7F5F0 100%) !important;
-      border-bottom: 1px solid #E8E4DC;
-      padding: 0;
-      color: #5A5A5A !important;
+  // ── Column header row (the dark bar) ───────────────────────────
+  .p-datatable-thead,
+  .p-datatable-thead > tr,
+  .p-datatable-thead > tr > th,
+  thead,
+  thead > tr,
+  thead > tr > th {
+    background: #FAFAF8 !important;
+    color: #5A5A5A !important;
+    border-bottom: 2px solid #E8E4DC !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    font-weight: 700 !important;
+    font-size: 0.78rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    padding: 1rem 1.5rem !important;
+  }
 
-      th {
-        background: transparent !important;
-        border: none !important;
-        padding: 1rem 1.5rem;
-        font-weight: 600;
-        color: #5A5A5A !important;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+  // ── Body rows ──────────────────────────────────────────────────
+  .p-datatable-tbody > tr,
+  tbody > tr {
+    background: #FFFFFF !important;
+    color: #1A1A1A !important;
+    border-bottom: 1px solid #F0EDE7 !important;
+    cursor: pointer;
+    transition: background 0.15s ease;
 
-        &:first-child {
-          border-radius: 0;
-        }
-
-        &:last-child {
-          border-radius: 0;
-        }
-      }
-    }
-
-    .p-datatable-tbody {
-      tr {
-        border-bottom: 1px solid #F0EDE7;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: #FFFFFF !important;
-        color: #1A1A1A !important;
-
-        &:hover {
-          background: #FAFAF8 !important;
-        }
-
-        &.selected-row {
-          background: #EAF3EE !important;
-        }
-
-        td {
-          border: none !important;
-          padding: 1rem 1.5rem;
-          vertical-align: middle;
-          background: transparent !important;
-          color: #1A1A1A !important;
-
-          &:first-child {
-            border-radius: 0;
-          }
-
-          &:last-child {
-            border-radius: 0;
-          }
-        }
-      }
-    }
-
-    .p-paginator {
+    &:hover {
       background: #FAFAF8 !important;
-      border-top: 1px solid #E8E4DC;
-      padding: 1rem 1.5rem;
-      border-radius: 0 0 20px 20px;
+    }
+
+    &.selected-row,
+    &[data-p-selected="true"] {
+      background: #EAF3EE !important;
+    }
+  }
+
+  .p-datatable-tbody > tr > td,
+  tbody > tr > td {
+    background: transparent !important;
+    color: #1A1A1A !important;
+    border: none !important;
+    padding: 1rem 1.5rem !important;
+    vertical-align: middle !important;
+  }
+
+  // ── Paginator ─────────────────────────────────────────────────
+  .p-paginator {
+    background: #FAFAF8 !important;
+    border-top: 1px solid #E8E4DC !important;
+    color: #5A5A5A !important;
+    padding: 0.85rem 1.5rem !important;
+    border-radius: 0 0 20px 20px !important;
+
+    .p-paginator-current {
       color: #5A5A5A !important;
+      font-size: 0.9rem;
+      margin-right: auto;
+    }
 
-      .p-paginator-current {
+    // Nav buttons (first/prev/next/last)
+    .p-paginator-first,
+    .p-paginator-prev,
+    .p-paginator-next,
+    .p-paginator-last,
+    button[data-pc-name] {
+      background: #FFFFFF !important;
+      border: 1px solid #E8E4DC !important;
+      border-radius: 8px !important;
+      color: #1A1A1A !important;
+      min-width: 2.5rem !important;
+      height: 2.5rem !important;
+      margin: 0 0.2rem !important;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: #F7F5F0 !important;
+        border-color: #2D6A4F !important;
+      }
+
+      &:disabled {
+        opacity: 0.45;
+      }
+
+      svg, .p-icon {
         color: #5A5A5A !important;
-        font-size: 0.9rem;
-        margin-right: auto;
+        fill: #5A5A5A !important;
+      }
+    }
+
+    // Page number buttons
+    .p-paginator-pages .p-paginator-page {
+      background: #FFFFFF !important;
+      border: 1px solid #E8E4DC !important;
+      border-radius: 8px !important;
+      color: #1A1A1A !important;
+      margin: 0 0.2rem !important;
+      min-width: 2.5rem !important;
+      height: 2.5rem !important;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #F7F5F0 !important;
+        border-color: #2D6A4F !important;
       }
 
-      .p-paginator-first,
-      .p-paginator-prev,
-      .p-paginator-next,
-      .p-paginator-last {
-        background: #FFFFFF !important;
-        border: 1px solid #E8E4DC !important;
-        border-radius: 8px;
-        margin: 0 0.25rem;
-        min-width: 2.5rem;
-        height: 2.5rem;
-        transition: all 0.2s ease;
-        color: #1A1A1A !important;
-
-        &:hover:not(:disabled) {
-          background: #F7F5F0 !important;
-          border-color: #2D6A4F !important;
-        }
-
-        &:disabled {
-          opacity: 0.5;
-        }
-
-        .p-paginator-icon {
-          color: #1A1A1A !important;
-        }
+      &.p-paginator-page-selected,
+      &[aria-current="page"] {
+        background: #2D6A4F !important;
+        border-color: #2D6A4F !important;
+        color: #FFFFFF !important;
       }
+    }
 
-      .p-paginator-pages {
-        .p-paginator-page {
-          background: #FFFFFF !important;
-          border: 1px solid #E8E4DC !important;
-          border-radius: 8px;
-          margin: 0 0.25rem;
-          min-width: 2.5rem;
-          height: 2.5rem;
-          transition: all 0.2s ease;
-          color: #1A1A1A !important;
+    // Rows-per-page select/dropdown
+    .p-select,
+    .p-dropdown {
+      background: #FFFFFF !important;
+      border: 1px solid #E8E4DC !important;
+      border-radius: 8px !important;
+      color: #1A1A1A !important;
+      margin-left: 0.5rem;
 
-          &:hover {
-            background: #F7F5F0 !important;
-            border-color: #2D6A4F !important;
-          }
+      &:hover  { border-color: #2D6A4F !important; }
 
-          &.p-paginator-page-selected {
-            background: #2D6A4F !important;
-            border-color: #2D6A4F !important;
-            color: white !important;
-          }
-        }
-      }
+      .p-select-label,
+      .p-dropdown-label { color: #1A1A1A !important; }
 
-      .p-dropdown {
-        background: #FFFFFF !important;
-        border: 1px solid #E8E4DC !important;
-        border-radius: 8px;
-        margin-left: 0.5rem;
-        color: #1A1A1A !important;
-
-        &:hover {
-          border-color: #2D6A4F !important;
-        }
-
-        .p-dropdown-label {
-          color: #1A1A1A !important;
-        }
-      }
+      .p-select-dropdown,
+      .p-dropdown-trigger { color: #5A5A5A !important; }
     }
   }
 }
@@ -764,6 +818,40 @@
       font-weight: 600 !important;
       font-size: 0.8rem !important;
       padding: 0.25rem 0.75rem !important;
+    }
+  }
+}
+
+// PrimeNG Select / Dropdown overlay light theme override
+::ng-deep {
+  .p-select-overlay,
+  .p-dropdown-panel {
+    background: #FFFFFF !important;
+    border: 1px solid #E8E4DC !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+    color: #1A1A1A !important;
+    
+    .p-select-list,
+    .p-dropdown-items {
+      background: #FFFFFF !important;
+      
+      .p-select-option,
+      .p-dropdown-item {
+        color: #1A1A1A !important;
+        
+        &:hover,
+        &.p-focus {
+          background: #F7F5F0 !important;
+          color: #1A1A1A !important;
+        }
+        
+        &[aria-selected="true"],
+        &.p-highlight {
+          background: #EAF3EE !important;
+          color: #1E5C3F !important;
+        }
+      }
     }
   }
 }
@@ -928,20 +1016,29 @@
 }
 
 .type-badge {
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.35rem;
+  letter-spacing: 0.3px;
   
   &.long {
+    background: #EAF3EE;
     color: #1E5C3F;
+    border: 1px solid #A8D5BC;
+    
+    i { color: #2D6A4F; font-size: 0.7rem; }
   }
   
   &.short {
+    background: #FEF3C7;
     color: #B45309;
+    border: 1px solid #FCD34D;
+    
+    i { color: #B45309; font-size: 0.7rem; }
   }
 }
 
@@ -959,11 +1056,10 @@
 }
 
 .qty-cell {
-  color: #6B7280;
-  background: #F9FAFB;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  color: #5A5A5A;
   font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
 }
 
 .placeholder {
@@ -1567,4 +1663,15 @@
   height: 1px;
   background: #F0EDE7;
   margin: 0;
+}
+.custom-range-picker {
+  .p-datepicker-input {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid #E2E8F0;
+    width: 240px;
+  }
 }

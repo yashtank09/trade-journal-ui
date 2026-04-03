@@ -1,0 +1,15 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #F8FAFC;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    background: radial-gradient(circle at top center, rgba(16, 185, 129, 0.03), transparent 60%);
+}

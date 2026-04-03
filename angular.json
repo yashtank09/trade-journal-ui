@@ -3,8 +3,7 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": false,
-    "defaultCollection": "@angular-eslint/schematics"
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -62,6 +61,7 @@
               }
             ],
             "styles": [
+              "node_modules/primeicons/primeicons.css",
               "src/styles.scss"
             ],
             "scripts": [],
@@ -94,32 +94,15 @@
                 {
                   "type": "initial",
                   "maximumWarning": "2MB",
-                  "maximumError": "5MB",
-                  "baseline": "500kB"
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "16kB",
                   "maximumError": "32kB"
-                },
-                {
-                  "type": "bundle",
-                  "maximumWarning": "4MB",
-                  "maximumError": "8MB"
-                },
-                {
-                  "type": "all",
-                  "maximumWarning": "6MB",
-                  "maximumError": "10MB"
                 }
               ],
-              "namedChunks": false,
-              "aot": true,
-              "strict": true,
-              "preserveSymlinks": false,
-              "subresourceIntegrity": true,
-              "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json"
+              "namedChunks": false
             },
             "development": {
               "fileReplacements": [
@@ -128,21 +111,10 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ],
-              "optimization": {
-                "scripts": false,
-                "styles": {
-                  "minify": false,
-                  "inlineCritical": false
-                },
-                "fonts": false
-              },
+              "optimization": false,
               "sourceMap": true,
               "extractLicenses": false,
-              "aot": false,
-              "namedChunks": true,
-              "preserveSymlinks": true,
-              "watch": true,
-              "poll": 1000
+              "namedChunks": true
             },
             "staging": {
               "fileReplacements": [
@@ -151,14 +123,7 @@
                   "with": "src/environments/environment.staging.ts"
                 }
               ],
-              "optimization": {
-                "scripts": true,
-                "styles": {
-                  "minify": true,
-                  "inlineCritical": true
-                },
-                "fonts": true
-              },
+              "optimization": true,
               "outputHashing": "media",
               "sourceMap": true,
               "extractLicenses": true,
@@ -174,12 +139,7 @@
                   "maximumError": "40kB"
                 }
               ],
-              "namedChunks": true,
-              "extractLicenses": true,
-              "aot": true,
-              "strict": true,
-              "preserveSymlinks": false,
-              "subresourceIntegrity": false
+              "namedChunks": true
             },
             "local": {
               "fileReplacements": [
@@ -188,25 +148,10 @@
                   "with": "src/environments/environment.local.ts"
                 }
               ],
-              "optimization": {
-                "scripts": false,
-                "styles": {
-                  "minify": false,
-                  "inlineCritical": false
-                },
-                "fonts": false
-              },
+              "optimization": false,
               "sourceMap": true,
               "extractLicenses": false,
-              "aot": false,
-              "namedChunks": true,
-              "preserveSymlinks": true,
-              "watch": true,
-              "poll": 500,
-              "liveReload": true,
-              "hmr": true,
-              "port": 4200,
-              "host": "localhost"
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
@@ -216,38 +161,20 @@
           "options": {
             "buildTarget": "trade-journal-ui:build",
             "port": 4200,
-            "host": "localhost",
-            "open": true,
-            "ssl": false,
-            "sslKey": "",
-            "sslCert": "",
-            "proxyConfig": ""
+            "host": "localhost"
           },
           "configurations": {
             "production": {
-              "buildTarget": "trade-journal-ui:build:production",
-              "ssl": false,
-              "liveReload": false,
-              "hmr": false
+              "buildTarget": "trade-journal-ui:build:production"
             },
             "development": {
-              "buildTarget": "trade-journal-ui:build:development",
-              "liveReload": true,
-              "hmr": true,
-              "watch": true
+              "buildTarget": "trade-journal-ui:build:development"
             },
             "staging": {
-              "buildTarget": "trade-journal-ui:build:staging",
-              "ssl": false,
-              "liveReload": false,
-              "hmr": false
+              "buildTarget": "trade-journal-ui:build:staging"
             },
             "local": {
-              "buildTarget": "trade-journal-ui:build:local",
-              "liveReload": true,
-              "hmr": true,
-              "watch": true,
-              "open": true
+              "buildTarget": "trade-journal-ui:build:local"
             }
           },
           "defaultConfiguration": "development"
@@ -262,38 +189,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "watch": false,
-            "codeCoverage": true,
-            "codeCoverageExclude": [
-              "**/node_modules/**",
-              "**/dist/**",
-              "**/testing/**"
-            ],
-            "reporters": [
-              "default",
-              "html",
-              "json-summary"
-            ],
-            "browsers": [
-              "ChromeHeadless"
-            ],
-            "webServerConfig": {
-              "target": "http://localhost:4200"
-            }
+            "runner": "vitest"
           }
         },
         "lint": {
@@ -302,31 +198,7 @@
             "lintFilePatterns": [
               "src/**/*.ts",
               "src/**/*.html"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "**/dist/**"
-            ],
-            "maxWarnings": 0,
-            "fix": true,
-            "format": "stylish",
-            "force": true,
-            "quiet": false
-          }
-        },
-        "e2e": {
-          "builder": "@angular/build:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "trade-journal-ui:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "trade-journal-ui:serve:production"
-            },
-            "ci": {
-              "protractorConfig": "e2e/protractor-ci.conf.js"
-            }
+            ]
           }
         }
       }

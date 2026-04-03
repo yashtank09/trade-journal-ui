@@ -2,7 +2,7 @@
     <div class="header-content">
         <div class="header-left">
             <div class="wordmark">
-                <div class="logo">📒</div>
+                <div class="logo"><i class="pi pi-chart-line" style="font-size: 1.2rem"></i></div>
                 <span class="app-name">TradeJournal</span>
             </div>
             <nav class="nav">
@@ -12,7 +12,7 @@
                         [class.active]="item.active"
                         (click)="navigateTo(item)"
                     >
-                        {{ item.icon }} {{ item.label }}
+                        <i [class]="item.icon"></i> {{ item.label }}
                     </button>
                 }
             </nav>
@@ -36,16 +36,16 @@
                         </div>
                         <div class="menu-divider"></div>
                         <button class="menu-item" (click)="viewProfile()">
-                            <span class="menu-icon">👤</span>
+                            <span class="menu-icon"><i class="pi pi-user"></i></span>
                             <span>Profile</span>
                         </button>
                         <button class="menu-item" (click)="viewSettings()">
-                            <span class="menu-icon">⚙️</span>
+                            <span class="menu-icon"><i class="pi pi-cog"></i></span>
                             <span>Settings</span>
                         </button>
                         <div class="menu-divider"></div>
                         <button class="menu-item logout" (click)="logout()">
-                            <span class="menu-icon">🚪</span>
+                            <span class="menu-icon"><i class="pi pi-sign-out"></i></span>
                             <span>Logout</span>
                         </button>
                     </div>

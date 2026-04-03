@@ -1,8 +1,6 @@
 <div [ngStyle]="{ 'min-height': '100vh', 'background': C.bg, 'font-family': 'DM Sans, sans-serif' }"
      class="trade-summary-container">
 
-    <!-- Header -->
-    <app-header></app-header>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -12,7 +10,7 @@
                 <div class="title-section">
                     <div class="title-wrapper">
                         <h1 class="page-title">
-                            <span class="title-icon">📊</span>
+                            <i class="pi pi-table title-icon"></i>
                             Trade Summary
                         </h1>
                         <div class="title-badge">
@@ -24,11 +22,11 @@
                 </div>
                 <div class="header-actions">
                     <button (click)="showUploadModal()" class="btn-secondary">
-                        <span class="btn-icon">📁</span>
+                        <i class="pi pi-upload btn-icon"></i>
                         <span class="btn-text">Upload File</span>
                     </button>
                     <button (click)="addTrade()" class="btn-primary">
-                        <span class="btn-icon">+</span>
+                        <i class="pi pi-plus btn-icon"></i>
                         <span class="btn-text">Log Trade</span>
                     </button>
                 </div>
@@ -40,7 +38,7 @@
             @for (stat of summaryStats(); track stat.label) {
                 <div [attr.data-stat]="stat.label" class="summary-card">
                     <div class="card-header">
-                        <span class="card-icon">{{ getStatIcon(stat.label) }}</span>
+                        <i [class]="getStatIcon(stat.label) + ' card-icon'"></i>
                         <span class="card-label">{{ stat.label }}</span>
                     </div>
                     <div class="card-content">
@@ -68,7 +66,7 @@
             <div class="filters-content">
                 <div class="search-section">
                     <div class="search-wrapper">
-                        <span class="search-icon">🔍</span>
+                        <i class="pi pi-search search-icon"></i>
                         <input
                                 #globalFilter
                                 (input)="onGlobalFilter(dt, $event)"
@@ -85,7 +83,7 @@
                 <div class="filter-groups">
                     <div class="filter-group">
                         <div class="group-label">
-                            <span class="group-icon">📈</span>
+                            <i class="pi pi-sort-alt group-icon"></i>
                             Direction
                         </div>
                         <div class="filter-chips">
@@ -99,20 +97,20 @@
                                     (click)="onTypeFilterChange('LONG')"
                                     [class]="filters().type === 'LONG' ? 'chip-active chip-green' : 'chip-inactive'"
                                     class="chip"
-                            >▲ Long
+                            ><i class="pi pi-arrow-up chip-dir-icon"></i> Long
                             </button>
                             <button
                                     (click)="onTypeFilterChange('SHORT')"
                                     [class]="filters().type === 'SHORT' ? 'chip-active chip-amber' : 'chip-inactive'"
                                     class="chip"
-                            >▼ Short
+                            ><i class="pi pi-arrow-down chip-dir-icon"></i> Short
                             </button>
                         </div>
                     </div>
 
                     <div class="filter-group">
                         <div class="group-label">
-                            <span class="group-icon">📋</span>
+                            <i class="pi pi-list group-icon"></i>
                             Status
                         </div>
                         <div class="filter-chips">
@@ -139,7 +137,7 @@
 
                     <div class="filter-group">
                         <div class="group-label">
-                            <span class="group-icon">📅</span>
+                            <i class="pi pi-calendar group-icon"></i>
                             Time Period
                         </div>
                         <div class="filter-chips">
@@ -167,57 +165,22 @@
                                     class="chip"
                             >This Month
                             </button>
-                            <button
-                                    (click)="toggleCustomDateFilter()"
-                                    [class]="filters().date === 'CUSTOM' ? 'chip-active' : 'chip-inactive'"
-                                    class="chip"
-                            >Custom Range
-                            </button>
+                            <p-datepicker
+                                [(ngModel)]="dateRange"
+                                selectionMode="range"
+                                [readonlyInput]="true"
+                                placeholder="Select Custom Range"
+                                (ngModelChange)="onDateRangeChange($event)"
+                                styleClass="custom-range-picker"
+                                appendTo="body"
+                            ></p-datepicker>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Custom Date Range Picker -->
-        @if (showCustomDateFilter()) {
-            <div class="custom-date-filter">
-                <div class="date-range-header">
-                    <h4>Custom Date Range</h4>
-                    <button (click)="clearCustomDateFilter()" class="btn-close">×</button>
-                </div>
-                <div class="date-range-content">
-                    <div class="date-input-group">
-                        <label for="start-date">From:</label>
-                        <input
-                                id="start-date"
-                                [(ngModel)]="customStartDate"
-                                type="date"
-                                class="date-input"
-                        >
-                    </div>
-                    <div class="date-input-group">
-                        <label for="end-date">To:</label>
-                        <input
-                                id="end-date"
-                                [(ngModel)]="customEndDate"
-                                type="date"
-                                class="date-input"
-                        >
-                    </div>
-                    <div class="date-range-actions">
-                        <button (click)="clearCustomDateFilter()" class="btn-secondary">Clear</button>
-                        <button 
-                                (click)="applyCustomDateFilter()"
-                                [disabled]="!customStartDate() || !customEndDate()"
-                                class="btn-primary"
-                        >
-                            Apply Filter
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
+
 
         <!-- PrimeNG Table -->
         <p-table 
@@ -272,11 +235,10 @@
 
                     <!-- Type Badge -->
                     <td>
-                        <p-tag 
-                            [value]="trade.direction === 'LONG' ? '▲ LONG' : '▼ SHORT'"
-                            [severity]="trade.direction === 'LONG' ? 'success' : 'warning'"
-                            [rounded]="true"
-                        ></p-tag>
+                        <span [class]="'dir-badge dir-badge--' + (trade.direction === 'LONG' ? 'long' : 'short')">
+                            <i [class]="'pi ' + (trade.direction === 'LONG' ? 'pi-arrow-up' : 'pi-arrow-down')"></i>
+                            {{ trade.direction }}
+                        </span>
                     </td>
 
                     <!-- Entry Price -->
@@ -325,7 +287,7 @@
                 <tr>
                     <td colspan="8" class="text-center py-8">
                         <div class="empty-state">
-                            <div class="empty-icon">📭</div>
+                            <i class="pi pi-inbox empty-icon"></i>
                             <p class="empty-title">No trades match your filters</p>
                             <button (click)="clearFilters()" pButton label="Clear all filters" class="p-button-outlined"></button>
                         </div>
@@ -335,7 +297,7 @@
         </p-table>
 
         <!-- Helpful tip -->
-        <p class="help-tip">💡 Click any row to view full trade details</p>
+        <p class="help-tip"><i class="pi pi-info-circle"></i> Click any row to view full trade details</p>
     </main>
 
     <!-- Detail Panel -->
@@ -349,7 +311,8 @@
                     <div class="panel-badges">
             <span [class.long]="selected()!.direction === 'LONG'" [class.short]="selected()!.direction === 'SHORT'"
                   class="type-badge">
-              {{ selected()!.direction === 'LONG' ? '▲ LONG' : '▼ SHORT' }}
+              <i [class]="'pi ' + (selected()!.direction === 'LONG' ? 'pi-arrow-up' : 'pi-arrow-down')"></i>
+              {{ selected()!.direction }}
             </span>
                         <span [class.closed]="selected()!.positionStatus === 'CLOSED'"
                               [class.open]="selected()!.positionStatus === 'OPEN'"
@@ -412,7 +375,7 @@
             }
 
             <!-- Tags -->
-            @if (selected()!.tags && selected()!.tags.length > 0) {
+            @if (selected()?.tags && selected()!.tags!.length > 0) {
                 <div class="tags-section">
                     @for (tag of selected()!.tags; track tag) {
                         <span class="tag">#{{ tag }}</span>

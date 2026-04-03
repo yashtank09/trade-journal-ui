@@ -27,9 +27,9 @@ export class HeaderComponent {
     menuVisible = signal(false);
 
     navItems = signal<NavItem[]>([
-        {label: 'Dashboard', icon: '◈', route: '/dashboard', active: false},
-        {label: 'Trade Log', icon: '≡', route: '/journal', active: true},
-        {label: 'Analytics', icon: '∿', route: '/analytics', active: false}
+        {label: 'Journal', icon: 'pi pi-book', route: '/journal', active: true},
+        {label: 'Analytics', icon: 'pi pi-chart-bar', route: '/analytics', active: false},
+        {label: 'Data Importer', icon: 'pi pi-cloud-upload', route: '/trade/file-upload', active: false}
     ]);
 
     constructor() {

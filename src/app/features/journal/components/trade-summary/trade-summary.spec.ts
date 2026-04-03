@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { TradeSummaryComponent } from './trade-summary';
-import { SharedModule } from '../../../../shared/shared.module';
+import { HeaderComponent } from '../../../../shared/components/header/header';
 
 describe('TradeSummaryComponent', () => {
   let component: TradeSummaryComponent;
@@ -14,7 +14,7 @@ describe('TradeSummaryComponent', () => {
       imports: [
         CommonModule,
         FormsModule,
-        SharedModule,
+        HeaderComponent,
         TradeSummaryComponent
       ]
     })
