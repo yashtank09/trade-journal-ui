@@ -3,14 +3,20 @@
     <!-- File Selection -->
     <div class="form-group">
       <label for="file" class="form-label">Select File *</label>
-      <input 
-        type="file" 
-        id="file" 
-        class="form-input"
-        accept=".csv,.xlsx,.xls,.json"
-        (change)="onFileSelect($event)"
-        [class.error]="uploadForm.get('file')?.invalid && uploadForm.get('file')?.touched"
-      >
+      <div class="file-input-wrapper">
+        <input 
+          type="file" 
+          id="file" 
+          class="form-input"
+          accept=".csv,.xlsx,.xls,.json"
+          (change)="onFileSelect($event)"
+          [class.error]="uploadForm.get('file')?.invalid && uploadForm.get('file')?.touched"
+        >
+        <div class="file-upload-box">
+          <i class="pi pi-cloud-upload"></i>
+          <span>Click or drag file to upload</span>
+        </div>
+      </div>
       <div class="file-info" *ngIf="selectedFile">
         <span class="file-name">{{ fileName }}</span>
         <span class="file-size">{{ fileSize }}</span>
@@ -35,22 +41,6 @@
       </select>
       <div class="error-message" *ngIf="uploadForm.get('fileType')?.invalid && uploadForm.get('fileType')?.touched">
         File type is required
-      </div>
-    </div>
-
-    <!-- Source System -->
-    <div class="form-group">
-      <label for="sourceSystem" class="form-label">Source System *</label>
-      <input 
-        type="text" 
-        id="sourceSystem" 
-        formControlName="sourceSystem" 
-        class="form-input"
-        placeholder="e.g., UI, API, MANUAL"
-        [class.error]="uploadForm.get('sourceSystem')?.invalid && uploadForm.get('sourceSystem')?.touched"
-      >
-      <div class="error-message" *ngIf="uploadForm.get('sourceSystem')?.invalid && uploadForm.get('sourceSystem')?.touched">
-        Source system is required
       </div>
     </div>
 
@@ -80,7 +70,7 @@
         id="description" 
         formControlName="description" 
         class="form-textarea"
-        rows="3"
+        style="resize: vertical; min-height: 60px; max-height: 120px;"
         placeholder="Enter file description..."
         [class.error]="uploadForm.get('description')?.invalid && uploadForm.get('description')?.touched"
       ></textarea>
@@ -112,20 +102,4 @@
       </button>
     </div>
   </form>
-
-  <!-- Success Message -->
-  <div class="alert alert-success" *ngIf="uploadSuccessInternal">
-    <div class="alert-content">
-      <h4>Upload Successful!</h4>
-      <p>Your file has been uploaded and processed successfully.</p>
-    </div>
-  </div>
-
-  <!-- Error Message -->
-  <div class="alert alert-error" *ngIf="uploadError">
-    <div class="alert-content">
-      <h4>Upload Failed</h4>
-      <p>{{ uploadError }}</p>
-    </div>
-  </div>
 </div>

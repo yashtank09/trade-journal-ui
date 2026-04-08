@@ -5,10 +5,10 @@ import {catchError, map} from 'rxjs/operators';
 import {environment} from '../../../../environments/environment';
 
 export interface FileMetadata {
-  fileType: 'CSV' | 'EXCEL' | 'JSON';
-  sourceSystem: string;
+  'file-type': 'CSV' | 'EXCEL' | 'JSON';
+  'source-system': string;
   description: string;
-  fileCategory: 'TRADE_BOOK' | 'PORTFOLIO' | 'REPORTS' | 'OTHER';
+  'file-category': 'TRADE_BOOK' | 'PORTFOLIO' | 'REPORTS' | 'OTHER';
 }
 
 export interface UploadResponse {
@@ -39,8 +39,10 @@ export class FileUploadService {
     // Append the file
     formData.append('file', file);
     
-    // Append metadata as JSON string
-    formData.append('file-metadata', JSON.stringify(metadata));
+    // Append metadata as JSON Blob
+    formData.append('file-metadata', new Blob([JSON.stringify(metadata)], {
+      type: 'application/json'
+    }));
 
     return this.http.post<UploadResponse>(`${this.apiUrl}/upload`, formData, {
       reportProgress: true,
@@ -66,7 +68,9 @@ export class FileUploadService {
   }> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('file-metadata', JSON.stringify(metadata));
+    formData.append('file-metadata', new Blob([JSON.stringify(metadata)], {
+      type: 'application/json'
+    }));
 
     return this.http.post(`${this.apiUrl}/upload`, formData, {
       reportProgress: true,
