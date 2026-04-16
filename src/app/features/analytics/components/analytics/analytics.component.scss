@@ -1,0 +1,257 @@
+::ng-deep .analytics-wrapper {
+  --p-datatable-header-cell-background: #FAFAF8;
+  --p-datatable-header-cell-color: #5A5A5A;
+  --p-datatable-body-cell-background: #FFFFFF;
+  --p-datatable-body-row-background: #FFFFFF;
+  --p-datatable-body-row-color: #1A1A1A;
+  --p-datatable-body-row-hover-background: #FAFAF8;
+  --p-datatable-border-color: #E8E4DC;
+  --p-paginator-background: #FAFAF8;
+  --p-paginator-color: #5A5A5A;
+  
+  // Custom utility overrides
+  .p-tablist {
+    background: transparent !important;
+  }
+}
+
+.analytics-wrapper {
+  min-height: 100vh;
+  font-family: 'DM Sans', sans-serif;
+  background: linear-gradient(135deg, #F7F5F0 0%, #FAFAF8 100%);
+}
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+// Header Area
+.page-header {
+  margin-bottom: 2.5rem;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .page-title {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1A1A1A;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    
+    .title-icon { font-size: 2rem; opacity: 0.8; }
+  }
+  
+  .title-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #FFFFFF;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #E8E4DC;
+    font-size: 0.9rem;
+    color: #5A5A5A;
+    
+    .badge-dot {
+      width: 8px; height: 8px;
+      background: #2D6A4F; border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+  }
+  
+  .page-subtitle { color: #5A5A5A; margin: 0.5rem 0 0 0; font-size: 0.95rem; }
+  
+  .header-actions {
+    display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+    ::ng-deep .p-datepicker { width: 280px; }
+  }
+}
+
+// Button styles (Copied exactly from trade-summary.scss)
+.btn-primary {
+  background: linear-gradient(135deg, #2D6A4F 0%, #1E5C3F 100%);
+  color: white; border: none; padding: 1rem 1.5rem;
+  border-radius: 12px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 0.75rem;
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3); transition: all 0.3s ease;
+  
+  .btn-icon { font-size: 1.2rem; font-weight: 700; }
+  .btn-text { font-size: 0.95rem; }
+  &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(45, 106, 79, 0.4); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-secondary {
+  background: #FFFFFF; color: #5A5A5A; border: 2px solid #E8E4DC;
+  padding: 1rem 1.5rem; border-radius: 12px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 0.75rem;
+  transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .btn-icon { font-size: 1.2rem; font-weight: 700; }
+  &:hover:not(:disabled) { transform: translateY(-2px); border-color: #2D6A4F; color: #2D6A4F; box-shadow: 0 4px 16px rgba(45, 106, 79, 0.2); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// KPI / Summary Cards (Aligned to Trade Summary)
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.summary-card {
+  background: #FFFFFF; border-radius: 16px; padding: 1.5rem;
+  border: 1px solid #E8E4DC; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease; position: relative; overflow: hidden;
+  
+  &::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #2D6A4F, #4338CA); opacity: 0; transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    &::before { opacity: 1; }
+  }
+  
+  .card-header {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
+    .card-icon { font-size: 1.5rem; opacity: 0.8; color: #5A5A5A; }
+    .card-label { font-size: 0.85rem; color: #5A5A5A; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;}
+  }
+  
+  .card-content {
+    .card-value {
+      margin: 0; font-size: 1.8rem; font-weight: 700;
+      font-family: 'DM Mono', monospace; color: #1A1A1A;
+    }
+  }
+}
+
+// General Card Base
+.card-base {
+  background: #FFFFFF; border-radius: 20px; padding: 1.5rem;
+  border: 1px solid #E8E4DC; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  
+  .card-title {
+    margin: 0 0 1.25rem 0; font-size: 1.25rem; font-weight: 700; color: #1A1A1A;
+    display: flex; align-items: center; gap: 0.5rem;
+    i { color: #5A5A5A; }
+  }
+
+  &.border-accent-indigo { border-left: 5px solid #4338CA; padding-left: 20px;}
+  &.border-accent-amber { border-left: 5px solid #B45309; padding-left: 20px;}
+}
+.table-card { padding: 0; overflow: hidden; }
+
+// Secondary Grid Layout
+.layout-grid {
+  display: flex; gap: 2.5rem; flex-wrap: wrap; margin-bottom: 2.5rem;
+
+  .layout-sidebar {
+    width: 380px; display: flex; flex-direction: column; gap: 1.5rem;
+  }
+  
+  .layout-main {
+    flex: 1; min-width: 0;
+  }
+  
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    .layout-sidebar { width: 100%; }
+  }
+}
+
+// Stat Lists inside Sidebar Cards
+.stat-list {
+  display: flex; flex-direction: column; gap: 1.25rem;
+  .stat-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 1rem; border-bottom: 1px solid #F0EDE7;
+    &:last-child { border-bottom: none; padding-bottom: 0; }
+    .stat-label { color: #5A5A5A; font-size: 0.95rem; font-weight: 500;}
+    .stat-value { font-weight: 700; font-family: 'DM Mono', monospace; font-size: 1.1rem; }
+  }
+}
+
+// Utility Tokens aligned to standard
+.text-green { color: #1E5C3F; }
+.text-red { color: #C0392B; }
+.text-indigo { color: #4338CA; }
+.text-amber { color: #B45309; }
+.font-bold { font-weight: 700; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mb-4 { margin-bottom: 2rem; }
+.p-0 { padding: 0 !important; }
+.p-4 { padding: 1.5rem; }
+.p-5 { padding: 2rem; }
+
+// States
+.empty-state-card {
+  background: #FFFFFF; border-radius: 16px; border: 1px dashed #E8E4DC;
+  padding: 4rem 2rem; display: flex; flex-direction: column; align-items: center;
+  text-align: center; margin-bottom: 2rem;
+
+  .empty-icon i { font-size: 3rem; color: #9A9A9A; margin-bottom: 1rem; }
+  h3 { margin: 0; font-size: 1.5rem; color: #1A1A1A; }
+  p { margin: 1rem 0 0 0; color: #5A5A5A; max-width: 450px; }
+}
+
+// Shared UI element copies
+.chip {
+  padding: 0.4rem 0.8rem; border-radius: 16px; border: 1px solid #E8E4DC;
+  background: #FFFFFF; color: #5A5A5A; font-weight: 500; font-size: 0.8rem;
+  &.chip-inactive { background: #FAFAF8; }
+}
+
+.dir-badge {
+  display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem;
+  border-radius: 20px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.3px;
+  &--short { background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; }
+}
+
+// Table Overrides mapped directly to Aura Light Mode in Journal
+::ng-deep .trade-table {
+  .p-datatable-thead > tr > th {
+    background: #FAFAF8 !important; color: #5A5A5A !important;
+    border-bottom: 2px solid #E8E4DC !important;
+    font-weight: 700 !important; font-size: 0.78rem !important;
+    text-transform: uppercase !important; letter-spacing: 0.6px !important;
+    padding: 1rem 1.5rem !important; border-top: none !important; border-left: none !important; border-right: none !important;
+  }
+  .p-datatable-tbody > tr {
+    background: #FFFFFF !important; border-bottom: 1px solid #F0EDE7 !important;
+    &:hover { background: #FAFAF8 !important; }
+    td { padding: 1rem 1.5rem !important; border: none !important; }
+  }
+  .p-paginator {
+    background: #FAFAF8 !important; border-top: 1px solid #E8E4DC !important;
+    padding: 0.85rem 1.5rem !important; border-radius: 0 0 20px 20px !important;
+  }
+}
+
+// Inner Tabs
+::ng-deep .table-card .p-tablist {
+   padding: 1rem 1.5rem 0; border-bottom: 1px solid #E8E4DC;
+}

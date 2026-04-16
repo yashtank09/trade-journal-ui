@@ -1,0 +1,324 @@
+<div class="trade-summary-container analytics-wrapper">
+  <div class="main-content">
+    
+    <!-- Enhanced Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="title-section">
+          <div class="title-wrapper">
+            <h2 class="page-title">
+              <i class="pi pi-chart-line title-icon"></i> Analytics & Metrics
+            </h2>
+            <div class="title-badge">
+              <span class="badge-dot"></span>
+              Live Data
+            </div>
+          </div>
+          <p class="page-subtitle">Dive deep into your trading performance and habits.</p>
+        </div>
+        
+        <div class="header-actions">
+          <div class="search-section" style="margin-bottom: 0;">
+            <p-datepicker [(ngModel)]="dateRange" selectionMode="range" [readonlyInput]="true" placeholder="Select Date Range" [showIcon]="true" dateFormat="yy-mm-dd"></p-datepicker>
+          </div>
+          <button class="btn-primary" (click)="applyFilters()" [disabled]="isLoading()">
+             <i class="pi pi-search btn-icon" *ngIf="!isLoading()"></i>
+             <i class="pi pi-spinner pi-spin btn-icon" *ngIf="isLoading()"></i>
+             <span class="btn-text">Apply</span>
+          </button>
+          <button class="btn-secondary" (click)="resetFilters()" [disabled]="isLoading()">
+             <i class="pi pi-refresh btn-icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="empty-state-card" *ngIf="isError()">
+      <div class="empty-icon"><i class="pi pi-exclamation-triangle" style="color: #C0392B;"></i></div>
+      <h3>Failed to Load Analytics</h3>
+      <p>There was a problem communicating with the server. Please try again.</p>
+      <button class="btn-secondary mt-3" (click)="applyFilters()">
+        <i class="pi pi-refresh btn-icon"></i> <span class="btn-text">Retry</span>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading()">
+      <div class="summary-cards">
+        <p-skeleton width="100%" height="120px" borderRadius="16px" *ngFor="let i of [1,2,3,4,5,6]"></p-skeleton>
+      </div>
+      <div class="card-base mt-2">
+        <p-skeleton width="100%" height="350px" borderRadius="16px"></p-skeleton>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state-card" *ngIf="!isLoading() && !isError() && summary()?.totalTrades === 0">
+      <div class="empty-icon"><i class="pi pi-chart-bar"></i></div>
+      <h3>No Trading Data Found</h3>
+      <p>We couldn't find any trades for the selected date range. Broaden your filters or journal some new trades!</p>
+      <button class="btn-secondary mt-3" (click)="resetFilters()">
+        <i class="pi pi-filter-slash btn-icon"></i> <span class="btn-text">Reset Filters</span>
+      </button>
+    </div>
+
+    <ng-container *ngIf="!isLoading() && !isError() && (summary()?.totalTrades || 0) > 0">
+      
+      <!-- KPI Grid (Matching Trade Summary Stats) -->
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="card-header">
+            <i class="pi pi-list card-icon"></i>
+            <span class="card-label">Total Trades</span>
+          </div>
+          <div class="card-content">
+            <p class="card-value">{{ summary()?.totalTrades }}</p>
+          </div>
+        </div>
+        
+        <div class="summary-card">
+          <div class="card-header">
+            <i class="pi pi-percentage card-icon"></i>
+            <span class="card-label">Win Rate</span>
+          </div>
+          <div class="card-content">
+            <p class="card-value" [class.text-green]="summary()!.winRate >= 50" [class.text-red]="summary()!.winRate < 50">
+               {{ summary()?.winRate | number:'1.0-1' }}%
+            </p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-header">
+            <i class="pi pi-indian-rupee card-icon"></i>
+            <span class="card-label">Total Net P&L</span>
+          </div>
+          <div class="card-content">
+             <p class="card-value" [ngStyle]="pnlStyle(summary()?.totalNetPnl)">
+                {{ fmtMoney(summary()?.totalNetPnl) }}
+             </p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-header">
+            <i class="pi pi-chart-line card-icon"></i>
+            <span class="card-label">Profit Factor</span>
+          </div>
+          <div class="card-content">
+             <p class="card-value text-indigo" *ngIf="summary()!.profitFactor > 0">{{ summary()?.profitFactor | number:'1.2-2' }}</p>
+             <p class="card-value text-indigo" *ngIf="summary()!.profitFactor <= 0">N/A</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-header">
+            <i class="pi pi-arrow-up-right card-icon"></i>
+            <span class="card-label">Avg Win</span>
+          </div>
+          <div class="card-content">
+             <p class="card-value text-green">{{ fmtMoney(summary()?.averageWin) }}</p>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-header">
+            <i class="pi pi-arrow-down-right card-icon"></i>
+            <span class="card-label">Avg Loss</span>
+          </div>
+          <div class="card-content">
+             <p class="card-value text-red">{{ fmtMoney(summary()?.averageLoss) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equity Curve -->
+      <div class="card-base mb-4">
+        <h3 class="card-title"><i class="pi pi-chart-line"></i> Equity Curve</h3>
+        <div class="chart-wrapper">
+          <p-chart type="line" [data]="chartData" [options]="chartOptions" height="350px"></p-chart>
+        </div>
+      </div>
+
+      <!-- Secondary Metrics -->
+      <div class="layout-grid">
+        
+        <!-- Sidebar Metrics (Risk & Best/Worst) -->
+        <div class="layout-sidebar">
+          <div class="card-base mb-4 border-accent-indigo">
+             <h3 class="card-title"><i class="pi pi-star"></i> Best & Worst Trades</h3>
+             <div class="stat-list">
+                <div class="stat-item">
+                   <div class="stat-label">Best Trade (Max Win)</div>
+                   <div class="stat-value text-green">{{ fmtMoney(summary()?.maxWin) }}</div>
+                </div>
+                <div class="stat-item">
+                   <div class="stat-label">Worst Trade (Max Loss)</div>
+                   <div class="stat-value text-red">{{ fmtMoney(summary()?.maxLoss) }}</div>
+                </div>
+             </div>
+          </div>
+
+          <div class="card-base border-accent-amber">
+             <h3 class="card-title"><i class="pi pi-shield"></i> Risk Management</h3>
+             <div class="stat-list" *ngIf="riskMetrics()">
+                <div class="stat-item">
+                   <div class="stat-label">Avg Risk Amount</div>
+                   <div class="stat-value">{{ fmtMoney(riskMetrics()?.averageRiskAmount) }}</div>
+                </div>
+                <div class="stat-item">
+                   <div class="stat-label">Avg R-Multiple</div>
+                   <div class="stat-value text-indigo">{{ riskMetrics()?.averageRMultiple | number:'1.2-2' }}R</div>
+                </div>
+                <div class="stat-item">
+                   <div class="stat-label">Max Drawdown</div>
+                   <div class="stat-value text-red">{{ fmtMoney(riskMetrics()?.maxDrawdown) }}</div>
+                </div>
+                <div class="stat-item" *ngIf="riskMetrics()?.expectancy">
+                   <div class="stat-label">Expectancy</div>
+                   <div class="stat-value" [ngClass]="riskMetrics()!.expectancy >= 0 ? 'text-green' : 'text-red'">
+                     {{ fmtMoney(riskMetrics()?.expectancy) }}
+                   </div>
+                </div>
+             </div>
+             <div class="empty-message text-center pt-3" *ngIf="!riskMetrics()?.averageRiskAmount">
+               <span class="chip chip-inactive">No risk data documented yet.</span>
+             </div>
+          </div>
+        </div>
+
+        <!-- Main Content Area (Breakdown Tabs) -->
+        <div class="layout-main">
+          <div class="card-base table-card p-0">
+             <p-tabs value="0">
+               <p-tablist>
+                   <p-tab value="0"><i class="pi pi-folder mr-2"></i> Assets</p-tab>
+                   <p-tab value="1"><i class="pi pi-book mr-2"></i> Strategies</p-tab>
+                   <p-tab value="2"><i class="pi pi-calendar mr-2"></i> Time Profile</p-tab>
+                   <p-tab value="3"><i class="pi pi-exclamation-circle mr-2"></i> Mistakes</p-tab>
+               </p-tablist>
+               
+               <p-tabpanels>
+                   <!-- Asset Breakdown -->
+                   <p-tabpanel value="0">
+                       <p-table [value]="assetBreakdown()" styleClass="trade-table" [paginator]="true" [rows]="6" responsiveLayout="scroll">
+                           <ng-template pTemplate="header">
+                               <tr>
+                                   <th>Asset Class</th>
+                                   <th>Count</th>
+                                   <th>Win Rate</th>
+                                   <th class="text-right">Net P&L</th>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="body" let-item>
+                               <tr>
+                                   <td><span class="chip chip-inactive">{{item.category}}</span></td>
+                                   <td><span class="font-bold">{{item.tradeCount}}</span></td>
+                                   <td>
+                                       <span [class.text-green]="item.winRate >= 50" [class.text-red]="item.winRate < 50" class="font-bold">
+                                         {{item.winRate | number:'1.0-0'}}%
+                                       </span>
+                                   </td>
+                                   <td class="text-right" [ngStyle]="pnlStyle(item.netPnl)">{{fmtMoney(item.netPnl)}}</td>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="emptymessage">
+                               <tr><td colspan="4" class="text-center p-4">No asset data available.</td></tr>
+                           </ng-template>
+                       </p-table>
+                   </p-tabpanel>
+                   
+                   <!-- Strategies -->
+                   <p-tabpanel value="1">
+                        <p-table [value]="strategyBreakdown()" styleClass="trade-table" [paginator]="true" [rows]="6" responsiveLayout="scroll">
+                           <ng-template pTemplate="header">
+                               <tr>
+                                   <th>Strategy</th>
+                                   <th>Count</th>
+                                   <th>Win Rate</th>
+                                   <th class="text-right">Net P&L</th>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="body" let-item>
+                               <tr>
+                                   <td><span class="chip chip-inactive font-bold">{{item.category}}</span></td>
+                                   <td><span class="font-bold">{{item.tradeCount}}</span></td>
+                                   <td>
+                                       <span [class.text-green]="item.winRate >= 50" [class.text-red]="item.winRate < 50" class="font-bold">
+                                         {{item.winRate | number:'1.0-0'}}%
+                                       </span>
+                                   </td>
+                                   <td class="text-right" [ngStyle]="pnlStyle(item.netPnl)">{{fmtMoney(item.netPnl)}}</td>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="emptymessage">
+                               <tr><td colspan="4" class="text-center p-4">No strategy data logged.</td></tr>
+                           </ng-template>
+                       </p-table>
+                   </p-tabpanel>
+                   
+                   <!-- Time Profile -->
+                   <p-tabpanel value="2">
+                       <p-table [value]="timeBreakdown()" styleClass="trade-table" [paginator]="false" responsiveLayout="scroll">
+                           <ng-template pTemplate="header">
+                               <tr>
+                                   <th>Weekday</th>
+                                   <th>Count</th>
+                                   <th>Win Rate</th>
+                                   <th class="text-right">Net P&L</th>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="body" let-item>
+                               <tr>
+                                   <td><span class="chip chip-inactive font-bold">{{item.category}}</span></td>
+                                   <td><span class="font-bold">{{item.tradeCount}}</span></td>
+                                   <td>
+                                       <span [class.text-green]="item.winRate >= 50" [class.text-red]="item.winRate < 50" class="font-bold">
+                                         {{item.winRate | number:'1.0-0'}}%
+                                       </span>
+                                   </td>
+                                   <td class="text-right" [ngStyle]="pnlStyle(item.netPnl)">{{fmtMoney(item.netPnl)}}</td>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="emptymessage">
+                               <tr><td colspan="4" class="text-center p-4">No time profile available.</td></tr>
+                           </ng-template>
+                       </p-table>
+                   </p-tabpanel>
+                   
+                   <!-- Mistakes -->
+                   <p-tabpanel value="3">
+                        <p-table [value]="mistakes()" styleClass="trade-table" [paginator]="true" [rows]="6" responsiveLayout="scroll">
+                           <ng-template pTemplate="header">
+                               <tr>
+                                   <th>Mistake Tag</th>
+                                   <th>Occurrences</th>
+                                   <th class="text-right">Impact P&L</th>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="body" let-item>
+                               <tr>
+                                   <td>
+                                      <div class="dir-badge dir-badge--short" style="background:#FDECEA; color:#C0392B; border-color:#F0A8A1;">
+                                         <i class="pi pi-tag"></i> {{item.category}}
+                                      </div>
+                                   </td>
+                                   <td><span class="font-bold">{{item.tradeCount}}</span></td>
+                                   <td class="text-right" [ngStyle]="pnlStyle(item.netPnl)">{{fmtMoney(item.netPnl)}}</td>
+                               </tr>
+                           </ng-template>
+                           <ng-template pTemplate="emptymessage">
+                               <tr><td colspan="3" class="text-center p-5 text-green font-bold"><i class="pi pi-check-circle mr-2"></i> Great! No mistakes logged.</td></tr>
+                           </ng-template>
+                       </p-table>
+                   </p-tabpanel>
+               </p-tabpanels>
+             </p-tabs>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
+  </div>
+</div>
