@@ -271,6 +271,10 @@
   display: flex;
   align-items: center;
   margin-bottom: 0.25rem;
+
+  i {
+    margin-right: 0.5rem;
+  }
 }
 
 .form-section-subtitle {
@@ -296,7 +300,9 @@
   min-width: 0;
   
   label {
-    display: block;
+    display: flex;
+    align-items: center;
+    height: 20px;
     font-weight: 600;
     color: #1A1A1A;
     font-size: 0.85rem;
@@ -351,7 +357,7 @@
   background: #FAFAF9; // Rich soft off-white background
   border: 1.5px solid #EAE6DF;
   border-radius: 12px;
-  padding: 0 14px 0 42px; // Balanced left padding for the icon
+  padding: 0 14px 0 42px !important; // Balanced left padding for the icon (enforced)
   font-size: 0.92rem;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   outline: none;
@@ -394,7 +400,7 @@
 
 // Textarea input custom vertical flow
 .textarea-input {
-  padding: 12px 14px 12px 42px;
+  padding: 12px 14px 12px 42px !important;
   resize: vertical;
   height: auto;
 }
@@ -406,11 +412,11 @@
 
 // Dropdown/Select overrides
 .select-input {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
   cursor: pointer;
-  padding-right: 36px; // Ensure chevron space
+  padding-right: 36px !important; // Ensure chevron space (enforced)
 }
 
 .select-chevron {
@@ -633,5 +639,25 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+.status-badge-wrapper {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.card-subtitle {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 0.5rem;
+
+  i {
+    margin-right: 0.5rem;
   }
 }

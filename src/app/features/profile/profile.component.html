@@ -27,7 +27,7 @@
       <!-- Avatar Card -->
       <div class="card-base text-center profile-card relative">
         <!-- Status Badge -->
-        <div class="absolute top-4 right-4">
+        <div class="status-badge-wrapper">
           <span class="status-badge status-badge-success">
             <i class="pi pi-verified mr-1"></i> Active
           </span>
@@ -70,7 +70,7 @@
 
       <!-- Extra Help Card -->
       <div class="card-base border-accent-indigo">
-        <h4 class="card-subtitle mb-2"><i class="pi pi-info-circle mr-2 text-indigo-500"></i>KYC & Validation Info</h4>
+        <h4 class="card-subtitle"><i class="pi pi-info-circle text-indigo-500"></i>KYC & Validation Info</h4>
         <p class="help-text text-sm leading-relaxed text-slate-500">
           Your Permanent Account Number (PAN) is required for compliance and tax filing exports. Updates to your PAN will trigger a validation check matching Indian tax format standards.
         </p>
@@ -81,47 +81,28 @@
     <div class="layout-main">
       <div class="card-base">
         <h3 class="form-section-title">
-          <i class="pi pi-id-card mr-2 text-emerald-600"></i> Profile Information
+          <i class="pi pi-id-card text-emerald-600"></i> Profile Information
         </h3>
         <p class="form-section-subtitle mb-6">Update your account details and default preferences below.</p>
 
         <form [formGroup]="profileForm" (ngSubmit)="saveChanges()" class="profile-form">
           
-          <!-- First Name -->
+          <!-- Full Name -->
           <div class="field-group">
-            <label for="firstName">First Name <span class="text-rose-500">*</span></label>
+            <label for="fullName">Full Name <span class="text-rose-500">*</span></label>
             <div class="input-with-icon">
               <i class="pi pi-user input-icon"></i>
               <input 
                 type="text" 
-                id="firstName" 
-                formControlName="firstName"
+                id="fullName" 
+                formControlName="fullName"
                 class="field-input" 
-                [class.error]="isFieldInvalid('firstName')"
-                placeholder="Enter first name"
+                [class.error]="isFieldInvalid('fullName')"
+                placeholder="Enter full name"
               />
             </div>
-            @if (isFieldInvalid('firstName')) {
-              <p class="error-msg"><i class="pi pi-times-circle mr-1"></i>{{ getFieldError('firstName') }}</p>
-            }
-          </div>
-
-          <!-- Last Name -->
-          <div class="field-group">
-            <label for="lastName">Last Name <span class="text-rose-500">*</span></label>
-            <div class="input-with-icon">
-              <i class="pi pi-user input-icon"></i>
-              <input 
-                type="text" 
-                id="lastName" 
-                formControlName="lastName"
-                class="field-input" 
-                [class.error]="isFieldInvalid('lastName')"
-                placeholder="Enter last name"
-              />
-            </div>
-            @if (isFieldInvalid('lastName')) {
-              <p class="error-msg"><i class="pi pi-times-circle mr-1"></i>{{ getFieldError('lastName') }}</p>
+            @if (isFieldInvalid('fullName')) {
+              <p class="error-msg"><i class="pi pi-times-circle mr-1"></i>{{ getFieldError('fullName') }}</p>
             }
           </div>
 
@@ -230,9 +211,6 @@
               <p class="error-msg"><i class="pi pi-times-circle mr-1"></i>{{ getFieldError('tradingStyle') }}</p>
             }
           </div>
-
-          <!-- Empty Grid Cell to maintain balance on desktop -->
-          <div class="field-group spacer-cell"></div>
 
           <!-- Address Textarea (Spans 2 columns) -->
           <div class="field-group col-span-2">

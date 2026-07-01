@@ -121,6 +121,7 @@ export class UserProfileComponent implements OnInit {
     this.profileForm = this.fb.group({
       firstName: [profile.firstName, [Validators.required, Validators.minLength(2)]],
       lastName: [profile.lastName, [Validators.required, Validators.minLength(2)]],
+      fullName: [`${profile.firstName} ${profile.lastName}`.trim(), [Validators.required, Validators.minLength(4)]],
       email: [profile.email, [Validators.required, Validators.email]], // Disabled in UI or marked read-only
       mobileNumber: [profile.mobileNumber || '', [
         Validators.required, 
@@ -140,6 +141,28 @@ export class UserProfileComponent implements OnInit {
 
     // Make Email FormControl read-only/disabled
     this.profileForm.get('email')?.disable();
+
+    // Two-way synchronization between fullName and firstName/lastName
+    this.profileForm.get('fullName')?.valueChanges.subscribe(value => {
+      const nameParts = (value || '').trim().split(/\s+/);
+      const first = nameParts[0] || '';
+      const last = nameParts.slice(1).join(' ') || '';
+      
+      this.profileForm.get('firstName')?.setValue(first, { emitEvent: false });
+      this.profileForm.get('lastName')?.setValue(last, { emitEvent: false });
+      
+      this.profileForm.get('firstName')?.markAsDirty();
+      this.profileForm.get('lastName')?.markAsDirty();
+    });
+
+    const updateFullName = () => {
+      const first = this.profileForm.get('firstName')?.value || '';
+      const last = this.profileForm.get('lastName')?.value || '';
+      this.profileForm.get('fullName')?.setValue(`${first} ${last}`.trim(), { emitEvent: false });
+    };
+
+    this.profileForm.get('firstName')?.valueChanges.subscribe(updateFullName);
+    this.profileForm.get('lastName')?.valueChanges.subscribe(updateFullName);
   }
 
   // --- Form Accessors for Templates ---
@@ -149,11 +172,46 @@ export class UserProfileComponent implements OnInit {
   }
 
   isFieldInvalid(field: string): boolean {
+    if (field === 'fullName') {
+      const fnControl = this.profileForm.get('firstName');
+      const lnControl = this.profileForm.get('lastName');
+      const fullControl = this.profileForm.get('fullName');
+      
+      const fnInvalid = !!(fnControl && fnControl.invalid && (fnControl.touched || fnControl.dirty));
+      const lnInvalid = !!(lnControl && lnControl.invalid && (lnControl.touched || lnControl.dirty));
+      const fullInvalid = !!(fullControl && fullControl.invalid && (fullControl.touched || fullControl.dirty));
+      
+      return fnInvalid || lnInvalid || fullInvalid;
+    }
     const control = this.profileForm.get(field);
     return !!(control && control.invalid && (control.touched || control.dirty));
   }
 
   getFieldError(field: string): string {
+    if (field === 'fullName') {
+      const fnControl = this.profileForm.get('firstName');
+      const lnControl = this.profileForm.get('lastName');
+      const fullControl = this.profileForm.get('fullName');
+      
+      if (fullControl?.errors?.['required'] || fnControl?.errors?.['required'] || lnControl?.errors?.['required']) {
+        return 'Full name is required (first and last name)';
+      }
+      if (fnControl?.errors?.['minlength']) {
+        return 'First name must be at least 2 characters';
+      }
+      if (lnControl?.errors?.['minlength']) {
+        return 'Last name must be at least 2 characters';
+      }
+      if (fullControl?.errors?.['minlength']) {
+        return 'Full name must be at least 4 characters';
+      }
+      
+      if (fullControl?.invalid || fnControl?.invalid || lnControl?.invalid) {
+        return 'Please enter a valid full name (first and last name)';
+      }
+      return '';
+    }
+
     const control = this.profileForm.get(field);
     if (!control || !control.errors || !control.touched) return '';
 
@@ -191,7 +249,7 @@ export class UserProfileComponent implements OnInit {
     this.profileForm.reset({
       firstName: profile.firstName,
       lastName: profile.lastName,
-      email: profile.email,
+      fullName: `${profile.firstName} ${profile.lastName}`.trim(),
       mobileNumber: profile.mobileNumber || '',
       residentialAddress: profile.residentialAddress || '',
       pan: profile.pan || '',
@@ -238,6 +296,7 @@ export class UserProfileComponent implements OnInit {
           this.profileForm.reset({
             firstName: res.data.firstName,
             lastName: res.data.lastName,
+            fullName: `${res.data.firstName} ${res.data.lastName}`.trim(),
             email: res.data.email,
             mobileNumber: res.data.mobileNumber || '',
             residentialAddress: res.data.residentialAddress || '',
